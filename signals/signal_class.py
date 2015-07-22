@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class SpatioTemporalSignal:
+class SpatioTemporalSignal(object):
     """
     This Class is used to create a group of N signals that interact in space
     and time. The way that this interaction is carrieud out can be fully
@@ -105,6 +105,35 @@ class SpatioTemporalSignal:
         """
 
         self.interaction = interaction_matrix
+
+
+class TrigonometricMix(SpatioTemporalSignal):
+    """
+    This should allow us to initialize mixed signals easier
+    """
+    def __init__(self, dt=0.1, delay=10, Tmax=100, Nseries=2,
+                 phase_m=None, frequency_m=None):
+        """
+        Overrides the initialization but also gets the frequency
+        and phases matrix that are sufficient to determine a
+        trignometric mix.
+        """
+        super(TrigonometricMix, self).__init__(dt, delay,
+                                               Tmax, Nseries)
+        self.phase_matrix = phase_m
+        self.frequency_matrix = frequency_m
+
+        # Create trigonometric matrix
+        aux = []
+        for phase, frequency in zip(self.phase_matrix.flatten(),
+                                    self.frequency_matrix.flatten()):
+
+            aux.append(np.cos(frequency * self.time + frequency))
+
+        # Transform to array and reshape
+        aux = np.array(aux)
+        self.interaction = aux.reshape((self.Nseries,
+                                        self.Nseries, self.NTmax))
 
 
 def main():
