@@ -27,12 +27,19 @@ class SpatioTemporalSignal:
         # Intialize interaction
         self.interaction = np.zeros((self.Nseries, self.Nseries, self.NTmax))
 
+    def set_initial_conditions(self, initial):
+        """
+        Set the initial conditions
+        """
+        self.series[..., 0] = initial
+
     def construct_series(self):
         """
         This is the function that construct the series with a given interaction
         """
 
         for t in range(self.NTmax - 1):
+            print '------------'
             print 'Time t', t
 
             # First let's set the correct delay
@@ -42,21 +49,56 @@ class SpatioTemporalSignal:
                 delay_aux = t + 1
 
             # Update signal_index
+
             for series_idx in xrange(self.Nseries):
                 # Intialize vector to save time contribuionts
                 vec_aux = np.zeros(self.Nseries)
                 # Accomulate time contributions
                 for delay_index in range(delay_aux):
-                    # aux1 += x[delay_index] * a[t - delay_index]
-                    # aux2 += y[delay_index] * b[t - delay_index]
                     aux1 = self.series[:, delay_index]
-                    aux2 = self.interaction[series_idx, :, delay_index]
+                    aux2 = self.interaction[series_idx, :, t - delay_index]
                     vec_aux += aux1 * aux2
+                    # print 'vec_aux', vec_aux
 
                 # Combine time contributions and normalize
-                self.series[series_idx, t + 1] = np.mean(vec_aux) / delay_aux
+                self.series[series_idx, t + 1] = np.sum(vec_aux) / (delay_aux)
 
-    def interaction(self, interaction_matrix):
+    def construct_series_verbose(self):
+        """
+        This is the function that construct the series with a given interaction
+        """
+
+        for t in range(self.NTmax - 1):
+            print '------------'
+            print 'Time t', t
+
+            # First let's set the correct delay
+            if t + 1 > self.Ndelay:
+                delay_aux = self.Ndelay
+            else:
+                delay_aux = t + 1
+
+            # Update signal_index
+
+            for series_idx in xrange(self.Nseries):
+                print 'series_idx', series_idx
+                # Intialize vector to save time contribuionts
+                vec_aux = np.zeros(self.Nseries)
+                # Accomulate time contributions
+                for delay_index in range(delay_aux):
+                    aux1 = self.series[:, delay_index]
+                    aux2 = self.interaction[series_idx, :, t - delay_index]
+                    print 'series', aux1
+                    print 'interactions', aux2
+                    vec_aux += aux1 * aux2
+                    # print 'vec_aux', vec_aux
+
+                # Combine time contributions and normalize
+                print 'Contribution ', vec_aux
+                print 'Total contribution (BN) ', np.sum(vec_aux)
+                self.series[series_idx, t + 1] = np.sum(vec_aux) / (delay_aux)
+
+    def set_interaction(self, interaction_matrix):
         """
         This function is used whenever the user wants
         to pass a particular interaction matrix
