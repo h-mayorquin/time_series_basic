@@ -36,6 +36,7 @@ class SpatioTemporalSignal(object):
     def construct_series(self):
         """
         This is the function that construct the series with a given interaction
+        Doesn't work for one dimensional series
         """
 
         for t in range(self.NTmax - 1):
@@ -55,8 +56,8 @@ class SpatioTemporalSignal(object):
                 vec_aux = np.zeros(self.Nseries)
                 # Accomulate time contributions
                 for delay_index in range(delay_aux):
-                    aux1 = self.series[:, delay_index]
-                    aux2 = self.interaction[series_idx, :, t - delay_index]
+                    aux1 = self.series[:, t - delay_index]
+                    aux2 = self.interaction[series_idx, :, delay_index]
                     vec_aux += aux1 * aux2
                     # print 'vec_aux', vec_aux
 
@@ -82,12 +83,13 @@ class SpatioTemporalSignal(object):
 
             for series_idx in xrange(self.Nseries):
                 print 'series_idx', series_idx
+                print 'delay_aux of delay', delay_aux, self.Ndelay
                 # Intialize vector to save time contribuionts
                 vec_aux = np.zeros(self.Nseries)
                 # Accomulate time contributions
                 for delay_index in range(delay_aux):
-                    aux1 = self.series[:, delay_index]
-                    aux2 = self.interaction[series_idx, :, t - delay_index]
+                    aux1 = self.series[:, t - delay_index]
+                    aux2 = self.interaction[series_idx, :, delay_index]
                     print 'series', aux1
                     print 'interactions', aux2
                     vec_aux += aux1 * aux2
@@ -97,6 +99,7 @@ class SpatioTemporalSignal(object):
                 print 'Contribution ', vec_aux
                 print 'Total contribution (BN) ', np.sum(vec_aux)
                 self.series[series_idx, t + 1] = np.sum(vec_aux) / (delay_aux)
+                print 'next value series', self.series[series_idx, t + 1]
 
     def set_interaction(self, interaction_matrix):
         """
