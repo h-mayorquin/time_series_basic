@@ -1,38 +1,52 @@
+"""
+A script just to play
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
-from signals.signal_class import TrigonometricMix
+from signals.time_series_class import AR
+import statsmodels.api as sm
 
-# Frequencies and phases
-f1 = 1.0
-f2 = 1.0
-f3 = 1.0
-f4 = 1.0
-
-# Phases
-phase_1 = 0.0
-phase_2 = np.pi
-phase_3 = np.pi
-phase_4 = 0.0
-
-f_matrix = np.array(((f1, f2), (f3, f4)))
-phase_matrix = np.array(((phase_1, phase_2), (phase_3, phase_4)))
-
-# Intialize the class
-A = TrigonometricMix(Tmax=100, phase_m=phase_matrix, frequency_m=f_matrix)
-time = A.time
-initial_coditions = np.array((0, 1))
-A.set_initial_conditions(initial_coditions)
-# Construct the series
-A.construct_series()
-
-signal_x = A.series[0, :]
-signal_y = A.series[1, :]
-
-
-# Plot
 plot = True
+
+# Time parameters
+dt = 1.0
+Tmax = 1000
+
+# First we need the phi's vector
+phi0 = 0.0
+phi1 = 0.5
+phi2 = -0.5
+
+phi = np.array((phi0, phi1, phi2))
+
+
+# Now we need the initial conditions
+x0 = 1
+x1 = 1
+x2 = 0
+
+initial_conditions = np.array((x0, x1, x2))
+
+# Now we load the class and construct it
+A = AR(phi, dt=dt, Tmax=Tmax)
+A.initial_conditions(initial_conditions)
+series = A.construct_series()
+
+time = A.time
+
+# Now we get the autocorrelation function
+auto_correlation = sm.tsa.stattools.acf(series)
+partial_correlation = sm.tsa.stattools.pacf(series)
+
 if plot:
-    plt.plot(time, signal_x)
-    plt.plot(time, signal_y)
+    plt.subplot(3, 1, 1)
+    plt.plot(time, series, '*-')
+
+    plt.subplot(3, 1, 2)
+    plt.plot(auto_correlation, '*-')
+
+    plt.subplot(3, 1, 3)
+    plt.plot(partial_correlation, '*-')
 
     plt.show()
