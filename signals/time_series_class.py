@@ -66,7 +66,8 @@ class MixAr(AR):
         Overrides the initialization but also gets the sideckick function
         beta
         """
-        super(AR, self).__init__(phi=phi, variance=variance, Tmax=Tmax)
+        super(MixAr, self).__init__(phi=phi, variance=variance,
+                                    dt=dt, Tmax=Tmax)
         self.beta = beta
 
     def construct_series(self):
