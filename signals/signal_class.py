@@ -57,7 +57,7 @@ class SpatioTemporalSignal(object):
                 # Accomulate time contributions
                 for delay_index in range(delay_aux):
                     aux1 = self.series[:, t - delay_index]
-                    aux2 = self.interaction[series_idx, :, delay_index]
+                    aux2 = self.interaction[esries_idx, :, delay_index]
                     vec_aux += aux1 * aux2
                     # print 'vec_aux', vec_aux
 

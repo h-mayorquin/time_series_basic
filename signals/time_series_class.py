@@ -4,7 +4,7 @@ Here the time series generators such as AR, MA and ARMA will go for the moment.
 import numpy as np
 
 
-class AR:
+class AR(object):
     """
     This is a class that represents an AR process.
     We will make the conceptualization here that an AR can be
@@ -52,3 +52,40 @@ class AR:
             self.series[t] += np.random.normal(0, self.variance)
 
         return self.series
+
+
+class MixAr(AR):
+    """
+    This class is constructed with an AR process but mixing a
+    sideckick function beta
+    """
+
+    def __init__(self, phi, variance=1.0, dt=1.0, Tmax=100, beta=None):
+
+        """
+        Overrides the initialization but also gets the sideckick function
+        beta
+        """
+        super(AR, self).__init__(phi=phi, variance=variance, Tmax=Tmax)
+        self.beta = beta
+
+    def construct_series(self):
+        """
+        Overides the construct series method in order to implement
+        the filtering by a sidekick function.
+        """
+
+        for t in range(self.klags, self.NTmax):
+            # First  do the filtering with the past
+            self.series[t] = np.dot(self.phi, self.series[t - self.klags:t])
+            # Then add random noise and sidekick function
+            self.series[t] += np.random.normal(0, self.variance) + self.beta[t]
+
+        return self.series
+
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
