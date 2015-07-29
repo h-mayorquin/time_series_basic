@@ -1,5 +1,6 @@
 """
-A script just to play
+A script used to display the cross-correlation matrix
+and the the whole time seriesxX
 """
 
 import numpy as np
@@ -7,11 +8,9 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from signals.time_series_class import MixAr, AR
 from signals.aux_functions import sidekick
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from visualization import distance
 import os
 
-plot = False
 plot2 = False
 plot3 = False
 
@@ -32,7 +31,6 @@ phi2 = 0.3
 
 phi = np.array((phi0, phi1, phi2))
 
-
 # Now we need the initial conditions
 x0 = 1
 x1 = 1
@@ -52,20 +50,10 @@ mix_series = A.construct_series()
 
 time = A.time
 
-if plot:
-    plt.subplot(3, 1, 1)
-    plt.plot(time, beta)
-
-    plt.subplot(3, 1, 2)
-    plt.plot(time, normal_series)
-
-    plt.subplot(3, 1, 3)
-    plt.plot(time, mix_series)
-
-    plt.show()
-
-
+#########
 # Here we will calculate correlations
+#########
+
 nlags = 100
 unbiased = False
 
@@ -81,6 +69,9 @@ d[:, 1, 0] = xy_cross
 
 d[:, 0, 1] = d[:, 1, 0]
 
+##############
+#  Now plot the things
+##############
 
 #  fig = distance.linear(d, cmap='coolwarm', inter='none', origin='upper',
 #                  fontsize=16, aspect='auto')
