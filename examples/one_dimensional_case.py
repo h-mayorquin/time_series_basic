@@ -1,3 +1,10 @@
+"""
+In this script we generated a one dimensional time series with
+the class using an exponentially decaying filter mixed with
+a periodic signal and studied its correlation. This was done
+in order to case-show an special case for Pawell.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from signals.signal_class import SpatioTemporalSignal
@@ -61,7 +68,6 @@ else:
 
 result = A.series[0, :]
 correlation = np.correlate(result, result, mode='same')
-
 correlation_to_plot = correlation[correlation.size/2:]
 
 
