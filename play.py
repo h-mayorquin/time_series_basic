@@ -4,12 +4,11 @@ A script just to play
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import statsmodels.api as sm
-from signals.time_series_class import MixAr, AR
+from signals.time_series_class import MixAr
 from signals.aux_functions import sidekick
-from nexa.multidimensional_scaling import calculate_temporal_distance
-from sklearn import manifold, cluster
+from input.sensors import PerceptualSpace, Sensor
+from nexa.nexa import Nexa
+
 
 plot = False
 plot2 = False
@@ -47,52 +46,33 @@ mix_series = A.construct_series()
 time = A.time
 
 # Here we will calculate correlations
-nlags = 100
+Nlags = 100
 unbiased = False
+Nspatial_clusters = 2
+Ntime_clusters = 2
+Nembedding = 3  # Dimension of the embedding space
 
-x_auto = sm.tsa.acf(mix_series, unbiased=unbiased, nlags=nlags)
-y_auto = sm.tsa.acf(beta, unbiased=unbiased, nlags=nlags)
-xy_cross = sm.tsa.ccf(mix_series, beta, unbiased=unbiased)[0:nlags + 1]
+# We create the here perceptual space
+aux = [Sensor(mix_series, dt), Sensor(beta, dt)]
+perceptual_space = PerceptualSpace(aux, Nlags)
 
-# Now the distance matrix
-d = np.zeros((nlags + 1, 2, 2))
-d[:, 0, 0] = x_auto
-d[:, 1, 1] = y_auto
-d[:, 1, 0] = xy_cross
+# Now the nexa object
+nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
+                   Ntime_clusters)
 
-d[:, 0, 1] = d[:, 1, 0]
+# Now calculate the STDM
+nexa_object.calculate_distance_matrix()
 
-####
-# Let's transform to distance representation#
-###
+# Calculate the embedding
+nexa_object.calculate_embedding(Nembedding)
 
-A = calculate_temporal_distance(d)
+# Calculate the clustering
+nexa_object.calculate_spatial_clustering()
 
-####
-# Let's do MDS to get the embedding
-####
+# Calculate cluster to index
+nexa_object.calculate_cluster_to_indexes()
 
-n_comp = 3
-n_init = 4
-n_jobs = -1  # -1 To use all CPUs, 1 for only one
-disimi = 'precomputed'
+# Calculate time clusters
+nexa_object.calculate_time_clusters()
 
-classifier = manifold.MDS(n_components=n_comp, n_init=n_init,
-                          n_jobs=n_jobs, dissimilarity=disimi)
-embedd = classifier.fit_transform(A)
-
-
-####
-# Let's do MDS to get the embedding
-####
-
-n_clusters = 2
-n_jobs = -1  # -1 To use all CPUs, 1 for only one
-clusterer = cluster.KMeans(n_clusters=n_clusters, n_jobs=n_jobs)
-prediction = clusterer.fit_predict(embedd)
-
-# Prediction now has the index for every point
-
-static_representation = prediction.reshape((nlags, 2)).T
-plt.matshow(static_representation)
-plt.show()
+# Visualize the spatial clusters
