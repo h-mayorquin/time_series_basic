@@ -2,7 +2,6 @@
 The main class for Nexa will be here.
 """
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn import manifold, cluster
 
 from input.sensors import PerceptualSpace
@@ -13,7 +12,7 @@ class Nexa():
     This is the class for Nexa.
     """
 
-    n_init = 4
+    n_init = 10
     n_jobs = -1  # -1 To use all CPUs, 1 for only one
 
     def __init__(self, sensors, Nlags, Nspatial_clusters,

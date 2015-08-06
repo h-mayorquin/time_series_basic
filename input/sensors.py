@@ -92,7 +92,7 @@ class PerceptualSpace:
         self.SLM = np.zeros((self.Nsensors * self.nlags,
                              self.data_size - self.nlags))
 
-        # Get all the possible lags
+        # Get all the possible lags and put it into a matrix
         for lag in self.lags:
             for sensor_index, sensor in enumerate(self.sensors):
                 index = lag * self.Nsensors + sensor_index

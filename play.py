@@ -9,6 +9,7 @@ from signals.aux_functions import sidekick
 from input.sensors import PerceptualSpace, Sensor
 from nexa.nexa import Nexa
 from visualization.sensor_clustering import visualize_cluster_matrix
+from visualization.sensors import visualize_SLM
 from visualization.time_cluster import visualize_time_cluster_matrix
 
 # Time parameters
@@ -39,6 +40,7 @@ initial_conditions = np.array((x0, x1, x2))
 A = MixAr(phi, dt=dt, Tmax=Tmax, beta=beta)
 A.initial_conditions(initial_conditions)
 mix_series = A.construct_series()
+mix_series = beta
 
 time = A.time
 
@@ -53,6 +55,8 @@ Nembedding = 3  # Dimension of the embedding space
 aux = [Sensor(mix_series, dt), Sensor(beta, dt)]
 perceptual_space = PerceptualSpace(aux, Nlags)
 
+# Visualize the SLM
+
 # Now the nexa object
 nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
                    Ntime_clusters, Nembedding)
@@ -60,16 +64,22 @@ nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
 # Calculate all the quantities
 nexa_object.calculate_all()
 
-# Now the visualization of the clusters
-# fig = visualize_cluster_matrix(nexa_object)
-# plt.show(fig)
+if False:
+    fig = visualize_SLM(nexa_object)
+    plt.show(fig)
+
+#  Now the visualization of the clusters
+if True:
+    fig = visualize_cluster_matrix(nexa_object)
+    plt.show(fig)
 
 # Now to visualize the time clusters
 
-cluster = 0
-time_center = 0
-fig = visualize_time_cluster_matrix(nexa_object, cluster, time_center,
-                                    cmap='coolwarm', inter='none',
-                                    origin='upper', fontsize=16, aspect='auto')
+if False:
+    cluster = 0
+    time_center = 1
+    fig = visualize_time_cluster_matrix(nexa_object, cluster, time_center,
+                                        cmap='coolwarm', inter='none',
+                                        origin='upper', fontsize=16)
 
-plt.show(fig)
+    plt.show(fig)

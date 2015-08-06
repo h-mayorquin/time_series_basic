@@ -29,9 +29,10 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
     to_plot = np.zeros((Nsensors, Nlags))
 
     for index, value in zip(indexes, values):
+        # Transform the indexes to matrix representation
         sensor_index = index % Nsensors
         lag_index = int(index / Nsensors)
-        to_plot[sensor_index, lag_index] = value
+        to_plot[sensor_index, lag_index] = 1
 
     # Now the parameters
     to_plot_title = 'Time cluster'
@@ -39,7 +40,7 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
     cmap = cmap
     inter = inter
     origin = origin
-    
+
     fontsize = fontsize  # The fontsize
     fig_size = (16, 12)
     axes_position = [0.1, 0.1, 0.8, 0.8]
