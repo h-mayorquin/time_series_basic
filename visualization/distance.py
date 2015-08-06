@@ -104,7 +104,7 @@ def matrix(d, cmap='coolwarm', inter='none', origin='upper',
     time 0 : 11, 12, 13
              21, 22, 23
              31, 32, 33
-
+    
     time 1 : 11, 12, 13
              21, 22, 23
              31, 32, 33
@@ -182,5 +182,3 @@ def matrix(d, cmap='coolwarm', inter='none', origin='upper',
     cbar.solids.set_edgecolor('face')
 
     return fig
-
-

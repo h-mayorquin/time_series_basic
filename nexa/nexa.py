@@ -17,7 +17,7 @@ class Nexa():
     n_jobs = -1  # -1 To use all CPUs, 1 for only one
 
     def __init__(self, sensors, Nlags, Nspatial_clusters,
-                 Ntime_clusters, SLM=None):
+                 Ntime_clusters, Nembedding, SLM=None):
         """
         Describe the parameters
         """
@@ -25,6 +25,7 @@ class Nexa():
         self.Nlags = Nlags
         self.Nspatial_clusters = Nspatial_clusters
         self.Ntime_clusters = Ntime_clusters
+        self.Nembedding = Nembedding
 
         # Check that sensors are a PerceptualSpace instance
         # To do: Make this a try statmeent
@@ -47,7 +48,7 @@ class Nexa():
     def calculate_distance_matrix(self):
         self.STDM = self.sensors.calculate_STDM()
 
-    def calculate_embedding(self, n_comp):
+    def calculate_embedding(self):
         """
         This calculates the euclidian embedding of our
         distance matrix using MDS.
@@ -57,6 +58,7 @@ class Nexa():
         disimi = 'precomputed'
         n_init = Nexa.n_init
         n_jobs = Nexa.n_jobs
+        n_comp = self.Nembedding
 
         classifier = manifold.MDS(n_components=n_comp, n_init=n_init,
                                   n_jobs=n_jobs, dissimilarity=disimi)
@@ -107,3 +109,13 @@ class Nexa():
             classifier.fit_predict(data_in_the_cluster.T)
             centers = classifier.cluster_centers_
             self.cluster_to_time_centers[cluster_n] = centers
+
+    def calculate_all(self):
+        """
+        Calculates all the quantities of the object in one go
+        """
+        self.calculate_distance_matrix()
+        self.calculate_embedding()
+        self.calculate_spatial_clustering()
+        self.calculate_cluster_to_indexes()
+        self.calculate_time_clusters()

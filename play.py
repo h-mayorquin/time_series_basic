@@ -8,11 +8,8 @@ from signals.time_series_class import MixAr
 from signals.aux_functions import sidekick
 from input.sensors import PerceptualSpace, Sensor
 from nexa.nexa import Nexa
-
-
-plot = False
-plot2 = False
-plot3 = False
+from visualization.sensor_clustering import visualize_cluster_matrix
+from visualization.time_cluster import visualize_time_cluster_matrix
 
 # Time parameters
 dt = 0.1
@@ -58,21 +55,21 @@ perceptual_space = PerceptualSpace(aux, Nlags)
 
 # Now the nexa object
 nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
-                   Ntime_clusters)
+                   Ntime_clusters, Nembedding)
 
-# Now calculate the STDM
-nexa_object.calculate_distance_matrix()
+# Calculate all the quantities
+nexa_object.calculate_all()
 
-# Calculate the embedding
-nexa_object.calculate_embedding(Nembedding)
+# Now the visualization of the clusters
+# fig = visualize_cluster_matrix(nexa_object)
+# plt.show(fig)
 
-# Calculate the clustering
-nexa_object.calculate_spatial_clustering()
+# Now to visualize the time clusters
 
-# Calculate cluster to index
-nexa_object.calculate_cluster_to_indexes()
+cluster = 0
+time_center = 0
+fig = visualize_time_cluster_matrix(nexa_object, cluster, time_center,
+                                    cmap='coolwarm', inter='none',
+                                    origin='upper', fontsize=16, aspect='auto')
 
-# Calculate time clusters
-nexa_object.calculate_time_clusters()
-
-# Visualize the spatial clusters
+plt.show(fig)
