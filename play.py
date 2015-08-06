@@ -9,7 +9,7 @@ from signals.aux_functions import sidekick
 from input.sensors import PerceptualSpace, Sensor
 from nexa.nexa import Nexa
 from visualization.sensor_clustering import visualize_cluster_matrix
-from visualization.sensors import visualize_SLM
+from visualization.sensors import visualize_SLM, visualize_STDM
 from visualization.time_cluster import visualize_time_cluster_matrix
 
 # Time parameters
@@ -55,7 +55,6 @@ Nembedding = 3  # Dimension of the embedding space
 aux = [Sensor(mix_series, dt), Sensor(beta, dt)]
 perceptual_space = PerceptualSpace(aux, Nlags)
 
-# Visualize the SLM
 
 # Now the nexa object
 nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
@@ -64,12 +63,22 @@ nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
 # Calculate all the quantities
 nexa_object.calculate_all()
 
-if False:
+####
+# Visualizations
+####
+
+# Visualize the SLM
+if True:
     fig = visualize_SLM(nexa_object)
     plt.show(fig)
 
-#  Now the visualization of the clusters
+# Visualize the STDM
 if True:
+    fig = visualize_STDM(nexa_object)
+    plt.show(fig)
+
+#  Now the visualization of the clusters
+if False:
     fig = visualize_cluster_matrix(nexa_object)
     plt.show(fig)
 
