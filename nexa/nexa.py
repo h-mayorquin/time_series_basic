@@ -118,3 +118,26 @@ class Nexa():
         self.calculate_spatial_clustering()
         self.calculate_cluster_to_indexes()
         self.calculate_time_clusters()
+
+    def build_code_vectors(self):
+        """
+        A function that builds the code vectors for the current
+        SLM
+        """
+
+        code_vectors = []
+        cluster_to_index = self.cluster_to_index
+        cluster_to_time_centers = self.cluster_to_time_centers
+
+        Nt = self.SLM.shape[1]
+        for t in range(Nt):
+            vector = np.zeros(self.Nspatial_clusters)
+            for Ncluster, cluster_indexes in cluster_to_index.items():
+                cluster_data = self.SLM[cluster_indexes, t]
+                time_centers = cluster_to_time_centers[Ncluster]
+                dot = np.dot(time_centers, cluster_data)
+                vector[Ncluster] = np.argmax(dot)
+
+            code_vectors.append(vector)
+    
+        return code_vectors

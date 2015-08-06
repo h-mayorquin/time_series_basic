@@ -11,6 +11,7 @@ from nexa.nexa import Nexa
 from visualization.sensor_clustering import visualize_cluster_matrix
 from visualization.sensors import visualize_SLM, visualize_STDM
 from visualization.time_cluster import visualize_time_cluster_matrix
+from visualization.code_vectors import visualize_code_vectors
 
 # Time parameters
 dt = 0.1
@@ -47,8 +48,8 @@ time = A.time
 # Here we will calculate correlations
 Nlags = 100
 unbiased = False
-Nspatial_clusters = 2
-Ntime_clusters = 2
+Nspatial_clusters = 4
+Ntime_clusters = 4
 Nembedding = 3  # Dimension of the embedding space
 
 # We create the here perceptual space
@@ -63,17 +64,21 @@ nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
 # Calculate all the quantities
 nexa_object.calculate_all()
 
+# Build the code vectors
+
+code_vectors = nexa_object.build_code_vectors()
+
 ####
 # Visualizations
 ####
 
 # Visualize the SLM
-if True:
+if False:
     fig = visualize_SLM(nexa_object)
     plt.show(fig)
 
 # Visualize the STDM
-if True:
+if False:
     fig = visualize_STDM(nexa_object)
     plt.show(fig)
 
@@ -91,4 +96,11 @@ if False:
                                         cmap='coolwarm', inter='none',
                                         origin='upper', fontsize=16)
 
+    plt.show(fig)
+
+
+# Visualize the code vectors
+
+if True:
+    fig = visualize_code_vectors(code_vectors, cmap='jet')
     plt.show(fig)
