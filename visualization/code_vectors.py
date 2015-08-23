@@ -5,11 +5,35 @@ Visualizations for the code vectors
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import seaborn as sns
 
 
-def visualize_code_vectors(code_vectors, cmap='spectral', inter='none',
+def seaborn_code_vectors(code_vectors):
+    """
+    Seaborn version to visualize code vectors
+    """
+
+    to_plot = np.array(code_vectors)
+
+    fig, ax = plt.subplots(figsize=(11, 9))
+
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(to_plot, mask=None,  cmap=cmap,
+                vmax=1.0, vmin=-1.0,
+                square=True, xticklabels=5, yticklabels=5,
+                linewidths=0, cbar_kws={"shrink": .5}, ax=ax)
+
+    plt.title('Spatio Temporal Distance Matrix (Distances)')
+
+    return fig
+
+
+def visualize_code_vectors(code_vectors, cmap='Paired', inter='none',
                            origin='upper', fontsize=16, aspect='auto',
-                           colorbar=False):
+                           colorbar=True):
     """
     Document
     """

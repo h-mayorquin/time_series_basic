@@ -10,6 +10,7 @@ from input.sensors import PerceptualSpace, Sensor
 from nexa.nexa import Nexa
 from visualization.sensor_clustering import visualize_cluster_matrix
 from visualization.sensors import visualize_SLM, visualize_STDM
+from visualization.sensors import visualize_SLM, visualize_STDM_seaborn
 from visualization.time_cluster import visualize_time_cluster_matrix
 from visualization.code_vectors import visualize_code_vectors
 
@@ -41,14 +42,14 @@ initial_conditions = np.array((x0, x1, x2))
 A = MixAr(phi, dt=dt, Tmax=Tmax, beta=beta)
 A.initial_conditions(initial_conditions)
 mix_series = A.construct_series()
-mix_series = beta
+# mix_series = beta
 
 time = A.time
 
 # Here we will calculate correlations
 Nlags = 100
 unbiased = False
-Nspatial_clusters = 4
+Nspatial_clusters = 2
 Ntime_clusters = 4
 Nembedding = 3  # Dimension of the embedding space
 
@@ -72,6 +73,8 @@ code_vectors = nexa_object.build_code_vectors()
 # Visualizations
 ####
 
+# plt.style()
+
 # Visualize the SLM
 if False:
     fig = visualize_SLM(nexa_object)
@@ -79,7 +82,8 @@ if False:
 
 # Visualize the STDM
 if False:
-    fig = visualize_STDM(nexa_object)
+    #  fig = visualize_STDM(nexa_object)
+    fig = visualize_STDM_seaborn(nexa_object)
     plt.show(fig)
 
 #  Now the visualization of the clusters
@@ -102,5 +106,5 @@ if False:
 # Visualize the code vectors
 
 if True:
-    fig = visualize_code_vectors(code_vectors, cmap='jet')
+    fig = visualize_code_vectors(code_vectors)
     plt.show(fig)

@@ -2,10 +2,34 @@
 Visualize function realted to the sensors
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from aux import linear_to_matrix
+import seaborn as sns
+
+sns.set(style='white')
+
+
+def visualize_STDM_seaborn(nexa_object):
+    """
+    Routine which plots using seaborn
+    """
+
+    to_plot = nexa_object.STDM
+
+    fig, ax = plt.subplots(figsize=(11, 9))
+
+    # Generate a custom diverging colormap
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+    # Draw the heatmap with the mask and correct aspect ratio
+    sns.heatmap(to_plot, mask=None,  cmap=cmap,
+                vmax=1.0, vmin=-1.0,
+                square=True, xticklabels=5, yticklabels=5,
+                linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
+
+    plt.title('Spatio Temporal Distance Matrix (Distances)')
+
+    return fig
 
 
 def visualize_SLM(nexa_object, cmap='coolwarm', inter='none',
@@ -22,7 +46,7 @@ def visualize_SLM(nexa_object, cmap='coolwarm', inter='none',
     to_plot = SLM
 
     # First the parameters
-    to_plot_title = 'Clustering asigned to sensors'
+    to_plot_title = 'Sensor Lagged Matrix'
 
     cmap = cmap
     inter = inter

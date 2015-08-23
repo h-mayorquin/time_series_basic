@@ -14,14 +14,18 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
                                   colorbar=True):
     """
     Documentation
+
+    time center: is the time center that we want to plot
     """
 
     Nsensors = nexa_object.sensors.Nsensors
     Nlags = nexa_object.Nlags
 
     cluster_to_index = nexa_object.cluster_to_index
+    # This contains all the time centers for a given cluster
     time_centers = nexa_object.cluster_to_time_centers
 
+    # It is not obvious that the positional order fo these two should coincide
     values = time_centers[cluster][time_center]
     indexes = cluster_to_index[cluster]
 
@@ -32,7 +36,7 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
         # Transform the indexes to matrix representation
         sensor_index = index % Nsensors
         lag_index = int(index / Nsensors)
-        to_plot[sensor_index, lag_index] = 1
+        to_plot[sensor_index, lag_index] = value
 
     # Now the parameters
     to_plot_title = 'Time cluster'
