@@ -19,18 +19,8 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     Nlags = nexa_object.Nlags
     Nsensors = nexa_object.sensors.Nsensors
     values = nexa_object.index_to_cluster
-    matrix_indexes = linear_to_matrix(np.arange(Nlags * Nsensors),
-                                      Nsensors, Nlags)
 
-    to_plot = np.zeros((Nsensors, Nlags))
-    to_plot2 = linear_to_matrix_with_values(values, Nsensors, Nlags)
-
-    for index, value in zip(matrix_indexes, values):
-        sensor_index = index[0]
-        lag_index = index[1]
-        to_plot[sensor_index, lag_index] = value
-
-    print np.sum(to_plot - to_plot2)
+    to_plot = linear_to_matrix_with_values(values, Nsensors, Nlags)
 
     # First the parameters
     to_plot_title = 'Clustering asigned to sensors'

@@ -8,9 +8,9 @@ from signals.time_series_class import MixAr
 from signals.aux_functions import sidekick
 from input.sensors import PerceptualSpace, Sensor
 from nexa.nexa import Nexa
+from visualization.sensors import visualize_SLM
+from visualization.sensors import visualize_STDM_seaborn
 from visualization.sensor_clustering import visualize_cluster_matrix
-from visualization.sensors import visualize_SLM, visualize_STDM
-from visualization.sensors import visualize_SLM, visualize_STDM_seaborn
 from visualization.time_cluster import visualize_time_cluster_matrix
 from visualization.code_vectors import visualize_code_vectors
 
@@ -48,17 +48,15 @@ time = A.time
 
 # Here we will calculate correlations
 Nlags = 100
-unbiased = False
 Nspatial_clusters = 2
 Ntime_clusters = 4
 Nembedding = 3  # Dimension of the embedding space
 
 # We create the here perceptual space
-aux = [Sensor(mix_series, dt), Sensor(beta, dt)]
-perceptual_space = PerceptualSpace(aux, Nlags)
+aux_sensors = [Sensor(mix_series, dt), Sensor(beta, dt)]
+perceptual_space = PerceptualSpace(aux_sensors, Nlags)
 
-
-# Now the nexa object
+# Now the Nexa object
 nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
                    Ntime_clusters, Nembedding)
 
@@ -66,7 +64,6 @@ nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
 nexa_object.calculate_all()
 
 # Build the code vectors
-
 code_vectors = nexa_object.build_code_vectors()
 
 ####
@@ -87,12 +84,11 @@ if False:
     plt.show(fig)
 
 #  Now the visualization of the clusters
-if False:
+if True:
     fig = visualize_cluster_matrix(nexa_object)
     plt.show(fig)
 
 # Now to visualize the time clusters
-
 if False:
     cluster = 0
     time_center = 1
@@ -104,7 +100,6 @@ if False:
 
 
 # Visualize the code vectors
-
-if True:
+if False:
     fig = visualize_code_vectors(code_vectors)
     plt.show(fig)

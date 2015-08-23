@@ -30,8 +30,8 @@ def linear_to_matrix_with_values(linear_values, Nsensors, Nlags):
     matrix = np.zeros((Nsensors, Nlags))
 
     for index, value in zip(matrix_indexes, linear_values):
-        sensor_index = index[0]
-        lag_index = index[1]
+        sensor_index = int(index[0])
+        lag_index = int(index[1])
         matrix[sensor_index, lag_index] = value
 
     return matrix
