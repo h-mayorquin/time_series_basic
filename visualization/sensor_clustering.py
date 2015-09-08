@@ -6,7 +6,7 @@ clustering of the sensors
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-from aux import linear_to_matrix, linear_to_matrix_with_values
+from .aux import linear_to_matrix, linear_to_matrix_with_values
 
 
 def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',

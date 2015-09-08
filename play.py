@@ -73,12 +73,12 @@ code_vectors = nexa_object.build_code_vectors()
 # plt.style()
 
 # Visualize the SLM
-if False:
+if True:
     fig = visualize_SLM(nexa_object)
     plt.show(fig)
 
 # Visualize the STDM
-if False:
+if True:
     #  fig = visualize_STDM(nexa_object)
     fig = visualize_STDM_seaborn(nexa_object)
     plt.show(fig)
@@ -89,7 +89,7 @@ if True:
     plt.show(fig)
 
 # Now to visualize the time clusters
-if False:
+if True:
     cluster = 0
     time_center = 1
     fig = visualize_time_cluster_matrix(nexa_object, cluster, time_center,
@@ -100,6 +100,6 @@ if False:
 
 
 # Visualize the code vectors
-if False:
+if True:
     fig = visualize_code_vectors(code_vectors)
     plt.show(fig)
