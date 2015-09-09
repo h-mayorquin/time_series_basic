@@ -38,6 +38,13 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
         lag_index = int(index / Nsensors)
         to_plot[sensor_index, lag_index] = value
 
+    # Calculate min and max
+    aux1 = np.min(to_plot)
+    aux2 = np.max(to_plot)
+
+    vmax = np.max(np.abs(aux1), np.abs(aux2))
+    vmin = -vmax
+
     # Now the parameters
     to_plot_title = 'Time cluster'
 
@@ -50,12 +57,12 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
     axes_position = [0.1, 0.1, 0.8, 0.8]
 
     xlabel = 'Time lags'
-    ylabel = 'Sensors'
+    ylabel = 'Sensor'
 
     fig = plt.figure(figsize=fig_size)
     ax = fig.add_axes(axes_position)
     im = plt.imshow(to_plot, interpolation=inter, cmap=cmap,
-                    origin=origin, aspect=aspect)
+                    origin=origin, aspect=aspect, vmin=vmin, vmax=vmax)
 
     # Se the labels and titles
     ax.set_xlabel(xlabel)

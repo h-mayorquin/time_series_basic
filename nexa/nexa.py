@@ -4,7 +4,7 @@ The main class for Nexa will be here.
 import numpy as np
 from sklearn import manifold, cluster
 
-from input.sensors import PerceptualSpace
+from inputs.sensors import PerceptualSpace
 
 
 class Nexa():
@@ -139,5 +139,5 @@ class Nexa():
                 vector[Ncluster] = np.argmax(dot)
 
             code_vectors.append(vector)
-    
+
         return code_vectors
