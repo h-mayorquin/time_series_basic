@@ -26,7 +26,7 @@ class LagStructure(object):
     vector of equal weights as long as times is created for it
     """
 
-    def __init__(self, times=np.arange(10), weights=None):
+    def __init__(self, times=np.arange(10), weights=None, window_size=10):
 
         # Test for input arrays
         if(not isinstance(times, np.ndarray)):
@@ -42,5 +42,10 @@ class LagStructure(object):
         if weights.size != times.size:
             raise ValueError("times and weights should be same size")
 
+        if window_size < 0:
+            raise ValueError("Windows size should be positive")
+
+        # Asign the values
         self.times = times
         self.weights = weights
+        self.window_size = window_size

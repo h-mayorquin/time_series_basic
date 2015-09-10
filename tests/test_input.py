@@ -51,6 +51,14 @@ class test_lag_structure(TestCase):
                           times=times, weights=weights)
 
 
+    def test_windows_size_positive(self):
+        """
+        Test that the windows size is positive
+        """
+        times = np.arange(100)
+        self.assertRaises(ValueError, LagStructure, times=times, window_size=-3.0)
+
+
 class test_sensors(TestCase):
     """
     Testing the Sensor Class in inputs
@@ -96,12 +104,43 @@ class test_sensors(TestCase):
         self.assertRaises(ValueError, Sensor, data,
                           lag_structure=lag_structure3)
 
-    def test_lag_back(self):
+    def test_lag_methods_without_lag_structure(self):
         """
-        Tests if the lag structure is proper
+        The lag methods should throw an exception if not lag
+        method is defined when called
         """
-        
+        data = np.arange(100)
+        sensor = Sensor(data)
+        self.assertRaises(TypeError, sensor.lag_back(1))
+        self.assertRaises(TypeError, sensor.lag_ahead(1))
 
+
+    def test_lag_back_method_values(self):
+        """
+        This tests than lag back method gives numerically correct
+        results.
+        """ 
+
+        data = np.arange(100)
+        lag_structure = LagStructure(times=np.arange(10))
+        sensor = Sensor(data, lag_structure=lag_structure)
+        lagged_sensor = sensor.lag_back(1)
+        weight = lag_structure.weights[0]
+        self.assertAlmostEqual(lagged_sensor[-1], weight * sensor[-2])
+
+    def test_lag_ahead_method_values(self):
+        """
+        This tests than the lag head method gives numerically 
+        correct results.
+        """
+        data = np.arange(100)
+        lag_structure = LagStructure(times=np.arange(10))
+        sensor = Sensor(data, lag_structure=lag_structure)
+        lagged_sensor = sensor.lag_ahead(1)
+        weight = lag_structre.weights[0]
+        self.assertAlmostEqual(lagged_sensor[0], weight)
+        
+        
 
 def main():
     unittest.main()
