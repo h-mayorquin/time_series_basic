@@ -4,6 +4,7 @@ in our framework it is just data with a sampling rate
 """
 
 import numpy as np
+from .lag_structure import LagStructure
 
 
 class Sensor:
@@ -14,14 +15,25 @@ class Sensor:
     to operate with them
     """
 
-    def __init__(self, data, dt=1.0):
+    def __init__(self, data, dt=1.0, lag_structure=None):
         """
         Initializes the sensor, data should be an array of the
-        samples for the sensor and dt the sampling rate.
+        samples for the sensor and dt the sampling rate,
+        lag structure is an object from the LagStructure class
         """
+        if(dt <= 0):
+            raise ValueError("dt should be strictly positive")
+
+        if(not isinstance(data, np.ndarray)):
+            raise ValueError("Data has to be a numpy array")
+
+        condition = isinstance(lag_structure, LagStructure)
+        if(not condition and lag_structure is not None):
+            raise ValueError("lag structure has to be a LagStructure instance")
 
         self.data = data
         self.dt = dt
+        self.lag_structure = lag_structure
 
         self.size = data.size
 
