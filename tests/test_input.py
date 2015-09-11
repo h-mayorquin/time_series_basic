@@ -161,21 +161,19 @@ class test_sensors(TestCase):
         This tests than lag back method gives numerically correct
         result for the last value.
         """
-
-        data = np.random.rand(1000)
+        data = np.random.rand(100)
         dt = 0.5
-        lag_times = np.arange(10.0)
-        window_size = 10.0
+        lag_times = np.arange(1, 5.0)
+        window_size = 5.0
         Nwindow_size = int(window_size / dt)
         weights = np.ones(Nwindow_size)
 
         lag_structure = LagStructure(lag_times, weights, window_size)
         sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
 
-        Nwindow_size = int(10 / dt)
         index = lag_times[0] / dt
         weight = weights[0]
-        lagged_value = data[-index]
+        lagged_value = data[-(index + 1)]
 
         # Get the last value of the lagged back sensor
         lagged_sensor = sensor.lag_back(1)
