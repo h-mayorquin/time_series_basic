@@ -53,8 +53,10 @@ class Sensor:
         max_delay_size = data.size - last_index - self.Nwindow_size
         if(max_delay_size <= 0):
             error_string = "Last window goes out of data"
-            suggestion = "Change the window size or the lag_times"
-            raise IndexError(error_string + suggestion)
+            suggestion = ", Change the window size or the lag_times"
+            information = ", The max delay is:" + str(max_delay_size)
+            information += "\n For data size equal:" + str(data.size)
+            raise IndexError(error_string + suggestion + information)
 
     def lag_back(self, lag):
         """

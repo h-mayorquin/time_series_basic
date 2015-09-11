@@ -36,7 +36,7 @@ class LagStructure(object):
 
         condition = isinstance(weights, np.ndarray) or weights is None
         if(not condition):
-            raise ValueError("Weights should be numpy arrray or None")
+            raise ValueError("Weights should be numpy arr`ray or None")
 
         if weights is None:
             weights = np.ones(window_size)

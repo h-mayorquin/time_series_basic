@@ -128,6 +128,110 @@ class test_sensors(TestCase):
         sensor = Sensor(data)
         self.assertRaises(TypeError, sensor.lag_back(1))
 
+    def test_lag_back_method_return_size(self):
+        """
+        The lag bag method should return an array
+        of size equal to the windows size / dt
+        """
+
+        min_dt = 0.001
+        max_window_size = 20
+        max_lag = 100
+        data_size = max_lag / min_dt + max_window_size / min_dt + 1
+        data = np.random.rand(data_size)
+        lag_times = np.arange(max_lag)
+        test_size = 1000
+        window_sizes = np.random.uniform(0.001, max_window_size, test_size)
+
+        test_size = 1000
+        window_sizes = np.random.uniform(0.001, max_window_size, test_size)
+        dts = np.random.uniform(min_dt, 10, test_size)
+
+        for window_size, dt in zip(window_sizes, dts):
+
+            Nwindow_size = int(window_size / dt)
+            weights = np.ones(Nwindow_size)
+
+            lag_structure = LagStructure(lag_times, weights, window_size)
+            sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
+            self.assertAlmostEqual(Nwindow_size, sensor.lag_back(1).size)
+
+    def test_lag_back_last_value(self):
+        """
+        This tests than lag back method gives numerically correct
+        result for the last value.
+        """
+
+        data = np.random.rand(1000)
+        dt = 0.5
+        lag_times = np.arange(10.0)
+        window_size = 10.0
+        Nwindow_size = int(window_size / dt)
+        weights = np.ones(Nwindow_size)
+
+        lag_structure = LagStructure(lag_times, weights, window_size)
+        sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
+
+        Nwindow_size = int(10 / dt)
+        index = lag_times[0] / dt
+        weight = weights[0]
+        lagged_value = data[-index]
+
+        # Get the last value of the lagged back sensor
+        lagged_sensor = sensor.lag_back(1)
+
+        self.assertAlmostEqual(lagged_value * weight, lagged_sensor[-1])
+
+    def test_lag_back_values(self):
+        """
+        This tests than lag back method gives numerically correct
+        for all the values with equal weights
+        """
+
+        data = np.random.rand(1000)
+        dt = 0.5
+        lag_times = np.arange(10.0)
+        window_size = 10.0
+        Nwindow_size = int(window_size / dt)
+        lag = 4
+
+        lag_structure = LagStructure(lag_times=lag_times,
+                                     window_size=window_size)
+        sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
+
+        first_lag_index = lag_times[lag] / dt
+        start = data.size - first_lag_index - Nwindow_size
+
+        result = np.zeros(Nwindow_size)
+
+        for index in range(Nwindow_size):
+            result[index] = data[start + index]
+
+        nptest.assert_array_almost_equal(result, sensor.lag_back(lag))
+
+    def test_lag_back_weights(self):
+
+        data = np.random.rand(1000)
+        dt = 0.1
+        lag_times = np.arange(10.0)
+        window_size = 10.0
+        Nwindow_size = int(window_size / dt)
+        weights = np.exp(-np.arange(window_size / dt))
+
+        lag_structure = LagStructure(lag_times=lag_times, weights=weights,
+                                     window_size=window_size)
+        sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
+
+        first_lag_index = lag_times[0] / dt
+        start = data.size - first_lag_index - Nwindow_size
+
+        result = np.zeros(Nwindow_size)
+
+        for index in range(Nwindow_size):
+            result[index] = weights[index] * data[start + index]
+
+        nptest.assert_array_almost_equal(result, sensor.lag_back(1))
+
 
 if __name__ == '__main__':
     unittest.main()
