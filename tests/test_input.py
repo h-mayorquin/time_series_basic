@@ -20,43 +20,44 @@ class test_lag_structure(TestCase):
         """
         Test for the default conditions
         """
-        times = np.arange(10)
+        lag_times = np.arange(10)
         weights = np.ones(10)
 
         test_lag = LagStructure()
-        nptest.assert_almost_equal(times, test_lag.times)
+        nptest.assert_almost_equal(lag_times, test_lag.lag_times)
         nptest.assert_array_almost_equal(weights, test_lag.weights)
-
-    def test_equal_times_and_weights_size(self):
-        """
-        Test that the times vector and the weight vector are equal
-        """
-        times = np.arange(100)
-        weights = np.arange(10)
-
-        # This should raise an error
-        self.assertRaises(LagStructure, times=times, weights=weights)
 
     def test_input_not_numpyarray(self):
         """
         This test that only numpy array are taken as inputs
         """
-        times = [3, 2, 4]
+        lag_times = [3, 2, 4]
         weights = {1, 2, 4}
 
         # All of those inputs have to raise an exception
-        self.assertRaises(ValueError, LagStructure, times=times)
+        self.assertRaises(ValueError, LagStructure, lag_times=lag_times)
         self.assertRaises(ValueError, LagStructure, weights=weights)
         self.assertRaises(ValueError, LagStructure,
-                          times=times, weights=weights)
+                          lag_times=lag_times, weights=weights)
 
+    def test_window_size_positive(self):
+        """
+        Test that the window size is positive
+        """
+        lag_times = np.arange(100)
+        self.assertRaises(ValueError, LagStructure,
+                          lag_times=lag_times, window_size=-3.0)
 
-    def test_windows_size_positive(self):
+    def test_times_come_sorted(self):
         """
-        Test that the windows size is positive
+        Test that the lag_times vector comes in sorted order.
         """
-        times = np.arange(100)
-        self.assertRaises(ValueError, LagStructure, times=times, window_size=-3.0)
+
+        lag_times1 = np.array((5, 3, 1))
+        lag_times2 = np.random.randint(1, 15, 10)
+
+        self.assertRaises(ValueError, LagStructure, lag_times=lag_times1)
+        self.assertRaises(ValueError, LagStructure, lag_times=lag_times2)
 
 
 class test_sensors(TestCase):
@@ -82,9 +83,9 @@ class test_sensors(TestCase):
         data2 = {1, 2, 3}
         data3 = {1: 2, 3: 4, 5: 4}
 
-        self.assertRaises(ValueError, Sensor, data1)
-        self.assertRaises(ValueError, Sensor, data2)
-        self.assertRaises(ValueError, Sensor, data3)
+        self.assertRaises(TypeError, Sensor, data1)
+        self.assertRaises(TypeError, Sensor, data2)
+        self.assertRaises(TypeError, Sensor, data3)
 
     def test_lag_structure_class(self):
         """
@@ -97,53 +98,36 @@ class test_sensors(TestCase):
         lag_structure2 = [1, 2, 3]
         lag_structure3 = 100
 
-        self.assertRaises(ValueError, Sensor, data,
+        self.assertRaises(TypeError, Sensor, data,
                           lag_structure=lag_structure1)
-        self.assertRaises(ValueError, Sensor, data,
+        self.assertRaises(TypeError, Sensor, data,
                           lag_structure=lag_structure2)
-        self.assertRaises(ValueError, Sensor, data,
+        self.assertRaises(TypeError, Sensor, data,
                           lag_structure=lag_structure3)
+
+    def test_window_size_vs_size_of_data(self):
+        """
+        This test that the window does not get out of the
+        range of data for the last lag
+        """
+        data = np.arange(1000)
+        dt = 0.1
+        lag_times = np.arange(90)
+        window_size = 11.0
+        lag_structure = LagStructure(lag_times, window_size=window_size)
+
+        with self.assertRaises(IndexError):
+            Sensor(data, dt, lag_structure)
 
     def test_lag_methods_without_lag_structure(self):
         """
         The lag methods should throw an exception if not lag
         method is defined when called
         """
-        data = np.arange(100)
+        data = np.arange(1000)
         sensor = Sensor(data)
         self.assertRaises(TypeError, sensor.lag_back(1))
-        self.assertRaises(TypeError, sensor.lag_ahead(1))
 
-
-    def test_lag_back_method_values(self):
-        """
-        This tests than lag back method gives numerically correct
-        results.
-        """ 
-
-        data = np.arange(100)
-        lag_structure = LagStructure(times=np.arange(10))
-        sensor = Sensor(data, lag_structure=lag_structure)
-        lagged_sensor = sensor.lag_back(1)
-        weight = lag_structure.weights[0]
-        self.assertAlmostEqual(lagged_sensor[-1], weight * sensor[-2])
-
-    def test_lag_ahead_method_values(self):
-        """
-        This tests than the lag head method gives numerically 
-        correct results.
-        """
-        data = np.arange(100)
-        lag_structure = LagStructure(times=np.arange(10))
-        sensor = Sensor(data, lag_structure=lag_structure)
-        lagged_sensor = sensor.lag_ahead(1)
-        weight = lag_structre.weights[0]
-        self.assertAlmostEqual(lagged_sensor[0], weight)
-        
-        
-
-def main():
-    unittest.main()
 
 if __name__ == '__main__':
-    main()
+    unittest.main()

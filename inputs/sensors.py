@@ -15,7 +15,8 @@ class Sensor:
     to operate with them
     """
 
-    def __init__(self, data, dt=1.0, lag_structure=None):
+    def __init__(self, data, dt=1.0,
+                 lag_structure=LagStructure(window_size=10)):
         """
         Initializes the sensor, data should be an array of the
         samples for the sensor and dt the sampling rate,
@@ -25,43 +26,57 @@ class Sensor:
             raise ValueError("dt should be strictly positive")
 
         if(not isinstance(data, np.ndarray)):
-            raise ValueError("Data has to be a numpy array")
+            raise TypeError("Data has to be a numpy array")
 
         condition = isinstance(lag_structure, LagStructure)
         if(not condition and lag_structure is not None):
-            raise ValueError("lag structure has to be a LagStructure instance")
+            raise TypeError("lag structure has to be a LagStructure instance")
 
+        # Intialize the data
         self.data = data
         self.dt = dt
         self.lag_structure = lag_structure
-
         self.size = data.size
 
-    def lag_ahead(self, lag, nlags):
+        # If no lag structure is not present create a simple one
+        if(lag_structure is None):
+            self.lag_structure = LagStructure(window_size=10)
+
+        self.Nwindow_size = int(self.lag_structure.window_size / dt)
+        self.lag_structure.weights = np.ones(self.Nwindow_size)
+
+        if(self.lag_structure.weights is None):
+            self.lag_structure.weights = np.ones(self.Nwindow_size)
+
+        # Check the the last time windows falls
+        last_index = int(lag_structure.lag_times[-1] / dt)
+        max_delay_size = data.size - last_index - self.Nwindow_size
+        if(max_delay_size <= 0):
+            error_string = "Last window goes out of data"
+            suggestion = "Change the window size or the lag_times"
+            raise IndexError(error_string + suggestion)
+
+    def lag_back(self, lag):
         """
-        This function lags the sensor ahead from its position
+        From the perspective of the last data point this method
+        moves back (towards the direction of the first data point)
+        the whole array of data. A unit here correponds to the first
+        element of the data structure. So, if the first element of the
+        times in the lag_structure is 3, the whole array will be moved
+        three seconds back.
 
-        To do:
-        Describe parameters
-
-        Add asertion for size
+        This returns an array of size lag_structure.window_size weighted
+        by the lag_structure.weights array
         """
+        if(self.lag_structure is None):
+            raise ValueError("Need a lag structure to lag")
 
-        start = lag
-        end = (self.size) - (nlags - lag)
-        return self.data[start:end]
+        lag_index = int(self.lag_structure.lag_times[lag - 1] / self.dt)
 
-    def lag_back(self, lag, nlags):
-        """
-        This function lags the senor back fomr its position
+        start = self.size - lag_index - self.Nwindow_size
+        end = self.size - lag_index
 
-        If the nlags is bigger than hialf of the data make a warning
-        it if is bigger an exception.
-        """
-
-        start = (nlags - lag)
-        end = self.size - lag
-        return self.data[start:end]
+        return self.data[start:end] * self.lag_structure.weights
 
 
 class PerceptualSpace:
