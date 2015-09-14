@@ -117,6 +117,26 @@ class test_sensors(TestCase):
         with self.assertRaises(IndexError):
             Sensor(data, dt, lag_structure)
 
+    def test_lag_back_limits(self):
+        """
+        Test that the lab_back method throws an assertion when
+        called with a lag smaller than 1 or bigger than the size
+        of the whole data.
+        """
+        data = np.arange(100)
+        dt = 0.5
+        lag_times = np.arange(10)
+        window_size = 10
+        lag_structure = LagStructure(lag_times=lag_times,
+                                     window_size=window_size)
+        sensor = Sensor(data, dt, lag_structure)
+
+        with self.assertRaises(IndexError):
+            sensor.lag_back(0)
+
+        with self.assertRaises(IndexError):
+            sensor.lag_back(lag_times.size + 1)
+
     def test_lag_methods_without_lag_structure(self):
         """
         The lag methods should throw an exception if not lag

@@ -51,6 +51,7 @@ class Sensor:
         # Check the the last time windows falls
         last_index = int(lag_structure.lag_times[-1] / dt)
         max_delay_size = data.size - last_index - self.Nwindow_size
+
         if(max_delay_size <= 0):
             error_string = "Last window goes out of data"
             suggestion = ", Change the window size or the lag_times"
@@ -62,16 +63,23 @@ class Sensor:
         """
         From the perspective of the last data point this method
         moves back (towards the direction of the first data point)
-        the whole array of data. A unit here correponds to the first
-        element of the data structure. So, if the first element of the
-        times in the lag_structure is 3, the whole array will be moved
-        three seconds back.
+        the whole array of data. The units here are given in terms
+        of the times vector in the lag structure. So, if the first
+        element of the times in the lag_structure is 3
+        (times[0] = 3), the whole array will be moved three seconds
+        back when lag.back(1) is called.
 
         This returns an array of size lag_structure.window_size weighted
-        by the lag_structure.weights array
+        by the lag_structure.weights array (means multiplied)
         """
         if(self.lag_structure is None):
             raise ValueError("Need a lag structure to lag")
+
+        if(lag < 1):
+            raise IndexError("Lags need to be bigger than one")
+
+        if(lag > self.lag_structure.lag_times.size):
+            raise IndexError("Lag outside of lag_structure times")
 
         lag_index = int(self.lag_structure.lag_times[lag - 1] / self.dt)
 
