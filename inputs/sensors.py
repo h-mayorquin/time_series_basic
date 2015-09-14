@@ -43,8 +43,8 @@ class Sensor:
             self.lag_structure = LagStructure(window_size=10)
 
         self.Nwindow_size = int(self.lag_structure.window_size / dt)
-        self.lag_structure.weights = np.ones(self.Nwindow_size)
 
+        # If the weights are not defined all of them to be equal
         if(self.lag_structure.weights is None):
             self.lag_structure.weights = np.ones(self.Nwindow_size)
 

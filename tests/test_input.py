@@ -21,11 +21,9 @@ class test_lag_structure(TestCase):
         Test for the default conditions
         """
         lag_times = np.arange(10)
-        weights = np.ones(10)
 
         test_lag = LagStructure()
         nptest.assert_almost_equal(lag_times, test_lag.lag_times)
-        nptest.assert_array_almost_equal(weights, test_lag.weights)
 
     def test_input_not_numpyarray(self):
         """
@@ -137,7 +135,8 @@ class test_sensors(TestCase):
         min_dt = 0.001
         max_window_size = 20
         max_lag = 100
-        data_size = max_lag / min_dt + max_window_size / min_dt + 1
+        # This is the maximum size that could be attained
+        data_size = int(max_lag / min_dt + max_window_size / min_dt + 1)
         data = np.random.rand(data_size)
         lag_times = np.arange(max_lag)
         test_size = 1000
@@ -171,7 +170,7 @@ class test_sensors(TestCase):
         lag_structure = LagStructure(lag_times, weights, window_size)
         sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
 
-        index = lag_times[0] / dt
+        index = int(lag_times[0] / dt)
         weight = weights[0]
         lagged_value = data[-(index + 1)]
 
@@ -197,7 +196,7 @@ class test_sensors(TestCase):
                                      window_size=window_size)
         sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
 
-        first_lag_index = lag_times[lag] / dt
+        first_lag_index = int(lag_times[lag - 1] / dt)
         start = data.size - first_lag_index - Nwindow_size
 
         result = np.zeros(Nwindow_size)
@@ -208,6 +207,10 @@ class test_sensors(TestCase):
         nptest.assert_array_almost_equal(result, sensor.lag_back(lag))
 
     def test_lag_back_weights(self):
+        """
+        This tests than lag back method gives numerically correct
+        for all the values with different weights.
+        """
 
         data = np.random.rand(1000)
         dt = 0.1
@@ -220,7 +223,7 @@ class test_sensors(TestCase):
                                      window_size=window_size)
         sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
 
-        first_lag_index = lag_times[0] / dt
+        first_lag_index = int(lag_times[0] / dt)
         start = data.size - first_lag_index - Nwindow_size
 
         result = np.zeros(Nwindow_size)

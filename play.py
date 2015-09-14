@@ -3,103 +3,27 @@ A script just to play
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
-from signals.time_series_class import MixAr
-from signals.aux_functions import sidekick
-from input.sensors import PerceptualSpace, Sensor
-from nexa.nexa import Nexa
-from visualization.sensors import visualize_SLM
-from visualization.sensors import visualize_STDM_seaborn
-from visualization.sensor_clustering import visualize_cluster_matrix
-from visualization.time_cluster import visualize_time_cluster_matrix
-from visualization.code_vectors import visualize_code_vectors
+from inputs.sensors import Sensor
+from inputs.lag_structure import LagStructure
 
-# Time parameters
-dt = 0.1
-Tmax = 100
+data = np.random.rand(1000)
+dt = 0.5
+lag_times = np.arange(10.0)
+window_size = 10.0
+Nwindow_size = int(window_size / dt)
+lag = 4
 
-# Let's get the axuiliary class
-amplitude = 1
-w1 = 1
-w2 = 5
-beta = sidekick(w1, w2, dt, Tmax, amplitude)
+lag_structure = LagStructure(lag_times=lag_times,
+                             window_size=window_size)
+sensor = Sensor(data, dt=dt, lag_structure=lag_structure)
 
-# First we need the phi's vector
-phi0 = 0.0
-phi1 = -0.8
-phi2 = 0.3
+first_lag_index = int(lag_times[lag - 1] / dt)
+start = data.size - first_lag_index - Nwindow_size
 
-phi = np.array((phi0, phi1, phi2))
+result = np.zeros(Nwindow_size)
 
-# Now we need the initial conditions
-x0 = 1
-x1 = 1
-x2 = 0
+for index in range(Nwindow_size):
+    result[index] = data[start + index]
 
-initial_conditions = np.array((x0, x1, x2))
-
-# Second we construct the series with the mix
-A = MixAr(phi, dt=dt, Tmax=Tmax, beta=beta)
-A.initial_conditions(initial_conditions)
-mix_series = A.construct_series()
-# mix_series = beta
-
-time = A.time
-
-# Here we will calculate correlations
-Nlags = 100
-Nspatial_clusters = 2
-Ntime_clusters = 4
-Nembedding = 3  # Dimension of the embedding space
-
-# We create the here perceptual space
-aux_sensors = [Sensor(mix_series, dt), Sensor(beta, dt)]
-perceptual_space = PerceptualSpace(aux_sensors, Nlags)
-
-# Now the Nexa object
-nexa_object = Nexa(perceptual_space, Nlags, Nspatial_clusters,
-                   Ntime_clusters, Nembedding)
-
-# Calculate all the quantities
-nexa_object.calculate_all()
-
-# Build the code vectors
-code_vectors = nexa_object.build_code_vectors()
-
-####
-# Visualizations
-####
-
-# plt.style()
-
-# Visualize the SLM
-if True:
-    fig = visualize_SLM(nexa_object)
-    plt.show(fig)
-
-# Visualize the STDM
-if True:
-    #  fig = visualize_STDM(nexa_object)
-    fig = visualize_STDM_seaborn(nexa_object)
-    plt.show(fig)
-
-#  Now the visualization of the clusters
-if True:
-    fig = visualize_cluster_matrix(nexa_object)
-    plt.show(fig)
-
-# Now to visualize the time clusters
-if True:
-    cluster = 0
-    time_center = 1
-    fig = visualize_time_cluster_matrix(nexa_object, cluster, time_center,
-                                        cmap='coolwarm', inter='none',
-                                        origin='upper', fontsize=16)
-
-    plt.show(fig)
-
-
-# Visualize the code vectors
-if True:
-    fig = visualize_code_vectors(code_vectors)
-    plt.show(fig)
+lagged_sensor = sensor.lag_back(lag)
+print(result, sensor.lag_back(lag))

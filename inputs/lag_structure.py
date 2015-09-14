@@ -38,9 +38,6 @@ class LagStructure(object):
         if(not condition):
             raise ValueError("Weights should be numpy arr`ray or None")
 
-        if weights is None:
-            weights = np.ones(window_size)
-
         if window_size < 0:
             raise ValueError("Windows size should be positive")
 
