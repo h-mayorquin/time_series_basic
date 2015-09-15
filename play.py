@@ -28,7 +28,7 @@ if False:
     plt.show()
 
 lag_times = np.arange(0, 3 * Tperiod)  # Go two times the period
-lag_times = np.arange(0, 3)
+# lag_times = np.arange(0, 3)
 
 lag_structure = LagStructure(lag_times=lag_times, window_size=2 * Tperiod)
 sensor1 = Sensor(sine, dt, lag_structure)
@@ -56,6 +56,5 @@ if False:
     from visualization.sensors import visualize_STDM_seaborn
     from visualization.time_cluster import visualize_time_cluster_matrix
     from visualization.code_vectors import visualize_code_vectors
-
     fig = visualize_SLM(nexa_object)
     plt.show(fig)

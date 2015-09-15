@@ -16,7 +16,7 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     Documentation
     """
 
-    Nlags = nexa_object.Nlags
+    Nlags = nexa_object.sensors.nlags
     Nsensors = nexa_object.sensors.Nsensors
     values = nexa_object.index_to_cluster
 

@@ -39,8 +39,6 @@ def visualize_SLM(nexa_object, cmap='coolwarm', inter='none',
     Document
     """
 
-    Nlags = nexa_object.Nlags
-    Nsensors = nexa_object.sensors.Nsensors
     SLM = nexa_object.SLM
 
     to_plot = SLM
@@ -56,8 +54,8 @@ def visualize_SLM(nexa_object, cmap='coolwarm', inter='none',
     fig_size = (16, 12)
     axes_position = [0.1, 0.1, 0.8, 0.8]
 
-    xlabel = 'Time lags'
-    ylabel = 'Sensors'
+    xlabel = 'Time Windows'
+    ylabel = 'Lagged Sensors'
 
     fig = plt.figure(figsize=fig_size)
     ax = fig.add_axes(axes_position)

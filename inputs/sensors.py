@@ -119,7 +119,7 @@ class PerceptualSpace:
 
         # Create the lags
         self.nlags = self.sensors[0].lag_structure.lag_times.size
-        self.lags = np.arange(1, self.nlags)
+        self.lags = np.arange(1, self.nlags + 1)
         # This has to be smaller than the minimum (sensor.lag_times.size)
         # For all the sensors.
 
@@ -139,10 +139,7 @@ class PerceptualSpace:
         for lag in self.lags:
             for sensor_index, sensor in enumerate(self.sensors):
                 index = (lag - 1) * self.Nsensors + sensor_index
-                print('sensor_index and index', sensor_index, index)
-                print('lag', lag)
                 self.SLM[index, :] = sensor.lag_back(lag)
-                print('result', sensor.lag_back(lag).sum())
 
         return self.SLM
 
