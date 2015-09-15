@@ -1,6 +1,9 @@
 """
-Here we will put the class for the sensor. The sensor is the simplest object
-in our framework it is just data with a sampling rate
+Here we will put the class for the sensor. 
+
+Classes:
+Sensor
+PerceptualSapce
 """
 
 import numpy as np
@@ -76,7 +79,7 @@ class Sensor:
             raise ValueError("Need a lag structure to lag")
 
         if(lag < 1):
-            raise IndexError("Lags need to be bigger than one")
+            raise IndexError("Lags need to positive")
 
         if(lag > self.lag_structure.lag_times.size):
             raise IndexError("Lag outside of lag_structure times")
@@ -95,7 +98,7 @@ class PerceptualSpace:
     relevant for the task.
     """
 
-    def __init__(self, sensors, nlags):
+    def __init__(self, sensors, nlags=0):
         """
         Initializes the perceptual space
 
@@ -110,12 +113,15 @@ class PerceptualSpace:
 
         # Get the data and make them sensors
         self.sensors = sensors
-        self.nlags = nlags
         self.Nsensors = len(sensors)
         self.data_size = sensors[0].size
+        self.Nwindow_size = sensors[0].Nwindow_size
 
         # Create the lags
-        self.lags = np.arange(self.nlags)
+        self.nlags = self.sensors[0].lag_structure.lag_times.size
+        self.lags = np.arange(1, self.nlags)
+        # This has to be smaller than the minimum (sensor.lag_times.size)
+        # For all the sensors.
 
     def calculate_SLM(self):
         """
@@ -127,13 +133,16 @@ class PerceptualSpace:
 
         # Initialize it
         self.SLM = np.zeros((self.Nsensors * self.nlags,
-                             self.data_size - self.nlags))
+                             self.Nwindow_size))
 
         # Get all the possible lags and put it into a matrix
         for lag in self.lags:
             for sensor_index, sensor in enumerate(self.sensors):
-                index = lag * self.Nsensors + sensor_index
-                self.SLM[index, :] = sensor.lag_back(lag, self.nlags)
+                index = (lag - 1) * self.Nsensors + sensor_index
+                print('sensor_index and index', sensor_index, index)
+                print('lag', lag)
+                self.SLM[index, :] = sensor.lag_back(lag)
+                print('result', sensor.lag_back(lag).sum())
 
         return self.SLM
 

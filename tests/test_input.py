@@ -9,7 +9,11 @@ import numpy.testing as nptest
 import sys
 sys.path.append('./')
 from inputs.lag_structure import LagStructure
-from inputs.sensors import Sensor
+from inputs.sensors import Sensor, PerceptualSpace
+
+######################
+# Test Sensors
+######################
 
 
 class test_lag_structure(TestCase):
@@ -56,6 +60,10 @@ class test_lag_structure(TestCase):
 
         self.assertRaises(ValueError, LagStructure, lag_times=lag_times1)
         self.assertRaises(ValueError, LagStructure, lag_times=lag_times2)
+
+######################
+# Test Sensors
+######################
 
 
 class test_sensors(TestCase):
@@ -253,6 +261,50 @@ class test_sensors(TestCase):
 
         nptest.assert_array_almost_equal(result, sensor.lag_back(1))
 
+######################
+#  Test PerceptualSpace
+######################
+
+
+class TestPerceptualSpace(TestCase):
+
+    def test_SLM_first_value(self):
+        """
+        This tests that the SLM matrix returns the first row
+        correctly.
+        """
+        # First we define the data
+        dt = 0.3
+        T = 100
+        Tperiod = 20.0
+        w = (2 * np.pi) / Tperiod
+        t = np.arange(0, T, dt)
+        data1 = np.sin(w * t)
+        data2 = np.cos(w * t)
+
+        # Now we define the lagged structure
+        lag_times = np.arange(0, 10)
+        window_size = 5.0
+        lag_structure = LagStructure(lag_times=lag_times,
+                                     window_size=window_size)
+
+        # Build the sensor
+        sensor1 = Sensor(data1, dt, lag_structure)
+        sensor2 = Sensor(data2, dt, lag_structure)
+        sensors = [sensor1, sensor2]
+
+        # Build the perceptual space
+        perceptual_space = PerceptualSpace(sensors)
+        SLM = perceptual_space.calculate_SLM()
+        first_row = SLM[0]
+        second_row = SLM[1]
+
+        # Now we get the firs row manually
+        result1 = sensor1.lag_back(1)
+        result2 = sensor2.lag_back(1)
+        nptest.assert_array_almost_equal(result1, first_row)
+        nptest.assert_array_almost_equal(result2, second_row)
+        
 
 if __name__ == '__main__':
     unittest.main()

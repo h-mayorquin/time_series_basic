@@ -15,13 +15,12 @@ class Nexa():
     n_init = 10
     n_jobs = -1  # -1 To use all CPUs, 1 for only one
 
-    def __init__(self, sensors, Nlags, Nspatial_clusters,
+    def __init__(self, sensors, Nspatial_clusters,
                  Ntime_clusters, Nembedding, SLM=None):
         """
         Describe the parameters
         """
 
-        self.Nlags = Nlags
         self.Nspatial_clusters = Nspatial_clusters
         self.Ntime_clusters = Ntime_clusters
         self.Nembedding = Nembedding
