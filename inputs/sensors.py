@@ -1,5 +1,5 @@
 """
-Here we will put the class for the sensor. 
+Here we will put the class for the sensor.
 
 Classes:
 Sensor
@@ -98,7 +98,7 @@ class PerceptualSpace:
     relevant for the task.
     """
 
-    def __init__(self, sensors, nlags=0):
+    def __init__(self, sensors, nlags=0, lag_first=True):
         """
         Initializes the perceptual space
 
@@ -123,6 +123,9 @@ class PerceptualSpace:
         # This has to be smaller than the minimum (sensor.lag_times.size)
         # For all the sensors.
 
+        # This is a flag to decide the structure of the SLM matrix.
+        self.lag_first = lag_first
+
     def calculate_SLM(self):
         """
         This calculates the Sensor Lagged Matrix (SLM) of the
@@ -135,11 +138,19 @@ class PerceptualSpace:
         self.SLM = np.zeros((self.Nsensors * self.nlags,
                              self.Nwindow_size))
 
-        # Get all the possible lags and put it into a matrix
-        for lag in self.lags:
+        # Do all the lags first
+        if self.lag_first:
             for sensor_index, sensor in enumerate(self.sensors):
-                index = (lag - 1) * self.Nsensors + sensor_index
-                self.SLM[index, :] = sensor.lag_back(lag)
+                for lag in self.lags:
+                    index = sensor_index * self.lags.size + (lag - 1)
+                    self.SLM[index, :] = sensor.lag_back(lag)
+
+        # Do the sensors first
+        else:
+            for lag in self.lags:
+                for sensor_index, sensor in enumerate(self.sensors):
+                    index = (lag - 1) * self.Nsensors + sensor_index
+                    self.SLM[index, :] = sensor.lag_back(lag)
 
         return self.SLM
 
