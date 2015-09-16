@@ -7,6 +7,7 @@ sys.path.append('./')
 from inputs.lag_structure import LagStructure
 from inputs.sensors import Sensor, PerceptualSpace
 from visualization.aux import linear_to_matrix
+from visualization.aux import linear_to_matrix_with_values
 
 
 class TestAuxFunctions(TestCase):
@@ -19,7 +20,7 @@ class TestAuxFunctions(TestCase):
         Test the auxiliary functions
         """
 
-        indexes = np.arange(20)
+        indexes = np.arange(50)
         Nsensors = 2
         Nlags = 3
 
@@ -31,6 +32,35 @@ class TestAuxFunctions(TestCase):
 
         nptest.assert_almost_equal(result1, matrix_indexes1[:Nlags, 1])
         nptest.assert_almost_equal(result2, matrix_indexes2[:Nsensors, 0])
+
+    def test_aux_functions_with_values(self):
+        """
+        Test the auxiliary functions
+        """
+
+        indexes = np.arange(50)
+        Nsensors = 2
+        Nlags = 3
+
+        matrix_indexes1 = linear_to_matrix_with_values(indexes, Nsensors,
+                                                       Nlags, True)
+        matrix_indexes2 = linear_to_matrix_with_values(indexes, Nsensors,
+                                                       Nlags, False)
+
+        result1 = indexes[:Nlags]
+        result2 = indexes[:Nsensors]
+
+        print('matrix1', matrix_indexes1)
+        print('matrix2', matrix_indexes2)
+        print(matrix_indexes1.shape, matrix_indexes2.shape)
+
+        print('result1', result1, 'result2', result2)
+        print('result1 should be', matrix_indexes1[:Nlags, 1])
+        print('result 2 should be', matrix_indexes2[:Nsensors, 0])
+
+        nptest.assert_almost_equal(result1, matrix_indexes1[0, :Nlags])
+        nptest.assert_almost_equal(result2, matrix_indexes2[:Nsensors, 0])
+
 
 if __name__ == '__main__':
     unittest.main()
