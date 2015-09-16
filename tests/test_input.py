@@ -16,7 +16,7 @@ from inputs.sensors import Sensor, PerceptualSpace
 ######################
 
 
-class test_lag_structure(TestCase):
+class TestLagStructure(TestCase):
     """
     This is for testing the lag structure class in inputs
     """

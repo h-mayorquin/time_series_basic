@@ -16,7 +16,7 @@ class Nexa():
     n_jobs = -1  # -1 To use all CPUs, 1 for only one
 
     def __init__(self, sensors, Nspatial_clusters,
-                 Ntime_clusters, Nembedding, SLM=None):
+                 Ntime_clusters, Nembedding, SLM=None, lag_first=True):
         """
         Describe the parameters
         """
@@ -24,13 +24,14 @@ class Nexa():
         self.Nspatial_clusters = Nspatial_clusters
         self.Ntime_clusters = Ntime_clusters
         self.Nembedding = Nembedding
+        self.lag_first = lag_first
 
         # Check that sensors are a PerceptualSpace instance
         # To do: Make this a try statmeent
         if isinstance(sensors, PerceptualSpace):
             self.sensors = sensors
         else:
-            self.sensors = PerceptualSpace(sensors, self.NLags)
+            self.sensors = PerceptualSpace(sensors, self.NLags, lag_first)
 
         if SLM is None:
             self.SLM = self.sensors.calculate_SLM()
@@ -51,6 +52,11 @@ class Nexa():
         This calculates the euclidian embedding of our
         distance matrix using MDS.
 
+        Calculates the embedding, that is, it embedds every
+        sensor on an Euclidian space with dimensions equal to
+        self.Nembedding. Threfore it should return an array
+        with a shape = (self.Nsensors, self.Nembedding).
+
         To Do: assertion for STDM not previously calculated
         """
         disimi = 'precomputed'
@@ -67,7 +73,12 @@ class Nexa():
 
     def calculate_spatial_clustering(self):
         """
-        This class calculates the spatial clustering
+        This class calculates the spatial clustering. Once there is
+        an embedding this function performs a clustering in the
+        embedded space with as many clusters as self.Nspatial_clusters
+
+        It returns an index to cluster which maps every sensor to the
+        cluster (via a number) that it belongs to.
         """
 
         n_jobs = Nexa.n_jobs
@@ -78,7 +89,11 @@ class Nexa():
 
     def calculate_cluster_to_indexes(self):
         """
-        Calculates the dictionary
+        Calculates the dictionary where each cluster maps
+        to the set of all sensors that belong to it. It should
+        therefore return a dictionary with as many elements as
+        there a clusters each mapping to a subset of the sensor
+        set.
         """
         self.cluster_to_index = {}
 
@@ -89,7 +104,7 @@ class Nexa():
     def calculate_time_clusters(self):
         """
         This calculates a dictionary where the keys are sensor
-        cluster indexes and the accessed elements are an array
+        cluster indexes and the values are an array
         of the cluster centers.
 
         TO DO: Return the signal indexes when asigned to cluster
@@ -122,6 +137,14 @@ class Nexa():
         """
         A function that builds the code vectors for the current
         SLM
+
+        You will have a list with as many code vectors as time
+        points you have.
+
+        Each code vector will have size equal to the number of
+        spatial cluster. Each spatial cluster will b given a
+        value according to which time cluster the piece of data
+        is closer too.
         """
 
         code_vectors = []
