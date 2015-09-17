@@ -19,7 +19,7 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
     """
 
     Nsensors = nexa_object.sensors.Nsensors
-    Nlags = nexa_object.Nlags
+    Nlags = nexa_object.sensors.nlags
 
     cluster_to_index = nexa_object.cluster_to_index
     # This contains all the time centers for a given cluster
@@ -32,11 +32,22 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
     # Transform the values to plot
     to_plot = np.zeros((Nsensors, Nlags))
 
-    for index, value in zip(indexes, values):
-        # Transform the indexes to matrix representation
-        sensor_index = index % Nsensors
-        lag_index = int(index / Nsensors)
-        to_plot[sensor_index, lag_index] = value
+    # Transform the values to plot
+    to_plot = np.zeros((Nsensors, Nlags))
+
+    if nexa_object.lags_first:
+        for index, value in zip(indexes, values):
+            # Transform the indexes to matrix representation
+            sensor_index = int(index / Nlags)
+            lag_index = index % Nlags
+            to_plot[sensor_index, lag_index] = value
+
+    else:
+        for index, value in zip(indexes, values):
+            # Transform the indexes to matrix representation
+            sensor_index = index % Nsensors
+            lag_index = int(index / Nsensors)
+            to_plot[sensor_index, lag_index] = value
 
     # Calculate min and max
     aux1 = np.min(to_plot)

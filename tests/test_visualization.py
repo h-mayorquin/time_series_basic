@@ -50,14 +50,6 @@ class TestAuxFunctions(TestCase):
         result1 = indexes[:Nlags]
         result2 = indexes[:Nsensors]
 
-        print('matrix1', matrix_indexes1)
-        print('matrix2', matrix_indexes2)
-        print(matrix_indexes1.shape, matrix_indexes2.shape)
-
-        print('result1', result1, 'result2', result2)
-        print('result1 should be', matrix_indexes1[:Nlags, 1])
-        print('result 2 should be', matrix_indexes2[:Nsensors, 0])
-
         nptest.assert_almost_equal(result1, matrix_indexes1[0, :Nlags])
         nptest.assert_almost_equal(result2, matrix_indexes2[:Nsensors, 0])
 

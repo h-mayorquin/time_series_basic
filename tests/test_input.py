@@ -256,6 +256,7 @@ class test_sensors(TestCase):
 
         result = np.zeros(Nwindow_size)
 
+        weights = weights[::-1]
         for index in range(Nwindow_size):
             result[index] = weights[index] * data[start + index]
 

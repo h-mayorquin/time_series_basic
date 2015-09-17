@@ -51,6 +51,9 @@ class Sensor:
         if(self.lag_structure.weights is None):
             self.lag_structure.weights = np.ones(self.Nwindow_size)
 
+        # Reverse the weights
+        self.lag_structure.weights = self.lag_structure.weights[::-1]
+
         # Check the the last time windows falls
         last_index = int(lag_structure.lag_times[-1] / dt)
         max_delay_size = data.size - last_index - self.Nwindow_size

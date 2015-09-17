@@ -20,7 +20,8 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     Nsensors = nexa_object.sensors.Nsensors
     values = nexa_object.index_to_cluster
 
-    to_plot = linear_to_matrix_with_values(values, Nsensors, Nlags)
+    to_plot = linear_to_matrix_with_values(values, Nsensors,
+                                           Nlags, nexa_object.lags_first)
 
     # First the parameters
     to_plot_title = 'Clustering asigned to sensors'
@@ -33,8 +34,8 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     fig_size = (16, 12)
     axes_position = [0.1, 0.1, 0.8, 0.8]
 
-    xlabel = 'Time lags'
-    ylabel = 'Sensors'
+    xlabel = 'Time Window'
+    ylabel = 'Lagged Sensors'
 
     fig = plt.figure(figsize=fig_size)
     ax = fig.add_axes(axes_position)

@@ -16,7 +16,7 @@ class Nexa():
     n_jobs = -1  # -1 To use all CPUs, 1 for only one
 
     def __init__(self, sensors, Nspatial_clusters,
-                 Ntime_clusters, Nembedding, SLM=None, lag_first=True):
+                 Ntime_clusters, Nembedding, SLM=None, lags_first=True):
         """
         Describe the parameters
         """
@@ -24,14 +24,16 @@ class Nexa():
         self.Nspatial_clusters = Nspatial_clusters
         self.Ntime_clusters = Ntime_clusters
         self.Nembedding = Nembedding
-        self.lag_first = lag_first
 
         # Check that sensors are a PerceptualSpace instance
         # To do: Make this a try statmeent
         if isinstance(sensors, PerceptualSpace):
             self.sensors = sensors
         else:
-            self.sensors = PerceptualSpace(sensors, self.NLags, lag_first)
+            raise TypeError("Sensors should be perceptual space")
+            self.sensors = PerceptualSpace(sensors, self.NLags, lags_first)
+
+        self.lags_first = self.sensors.lag_first
 
         if SLM is None:
             self.SLM = self.sensors.calculate_SLM()
