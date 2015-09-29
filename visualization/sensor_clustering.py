@@ -34,8 +34,8 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     fig_size = (16, 12)
     axes_position = [0.1, 0.1, 0.8, 0.8]
 
-    xlabel = 'Time Window'
-    ylabel = 'Lagged Sensors'
+    xlabel = 'Lags'
+    ylabel = 'Sensor'
 
     fig = plt.figure(figsize=fig_size)
     ax = fig.add_axes(axes_position)
@@ -47,10 +47,11 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     ax.set_ylabel(ylabel)
     ax.set_title(to_plot_title)
 
-    # Se the ticks names for x
-    # x_labels = np.arange(Nseries * Nseries + 1)
+    # Se the ticks names for x as the lags
+    x_labels = nexa_object.sensors.lags
     # ax.xaxis.set_major_formatter(plt.FixedFormatter(x_labels))
-    # ax.xaxis.set_major_locator(plt.MultipleLocator(1))
+    # Set the axis every then lags
+    # ax.xaxis.set_major_locator(plt.MultipleLocator(int(x_labels.size / 5)))
 
     # Change the font sizes
     axes = fig.get_axes()
