@@ -12,7 +12,7 @@ from inputs.lag_structure import LagStructure
 from inputs.sensors import Sensor, PerceptualSpace
 
 ######################
-# Test Sensors
+# Test Lag Structure
 ######################
 
 
@@ -62,7 +62,7 @@ class TestLagStructure(TestCase):
         self.assertRaises(ValueError, LagStructure, lag_times=lag_times2)
 
 ######################
-# Test Sensors
+# Test Sensor
 ######################
 
 

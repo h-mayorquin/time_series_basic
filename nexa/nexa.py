@@ -69,11 +69,11 @@ class Nexa():
         classifier = manifold.MDS(n_components=n_comp, n_init=n_init,
                                   n_jobs=n_jobs, dissimilarity=disimi)
 
-        self.embedding = classifier.fit_transform(self.STDM)
+        self.embedding = classifier.fit_transform(1 - self.STDM)
 
         return classifier.stress_
 
-    def calculate_spatial_clustering(self):
+    def calculate_spatial_clustering(self, centers=False):
         """
         This class calculates the spatial clustering. Once there is
         an embedding this function performs a clustering in the
@@ -88,6 +88,9 @@ class Nexa():
 
         classifier = cluster.KMeans(n_clusters=n_clusters, n_jobs=n_jobs)
         self.index_to_cluster = classifier.fit_predict(self.embedding)
+
+        if centers:
+            self.spatial_cluster_centers = classifier.cluster_centers_
 
     def calculate_cluster_to_indexes(self):
         """
