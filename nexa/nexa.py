@@ -69,7 +69,7 @@ class Nexa():
         classifier = manifold.MDS(n_components=n_comp, n_init=n_init,
                                   n_jobs=n_jobs, dissimilarity=disimi)
 
-        self.embedding = classifier.fit_transform(1 - self.STDM)
+        self.embedding = classifier.fit_transform(1 - np.abs(self.STDM))
 
         return classifier.stress_
 
