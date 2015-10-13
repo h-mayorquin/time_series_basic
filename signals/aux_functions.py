@@ -77,7 +77,7 @@ def gaussian_bump(x, mean=0, maximum=1.0,  baseline=0, HWHM_a=1.0, attenuation=2
     arg2 = (maximum- attenuation * baseline)
     A = np.log(arg1 / arg2)
 
-    sigma = (HWHM_a - mean) / np.sqrt(A)
+    sigma = HWHM_a/ np.sqrt(A)
 
     argument = (x - mean) / sigma
     gaussian = np.exp(-argument ** 2)
