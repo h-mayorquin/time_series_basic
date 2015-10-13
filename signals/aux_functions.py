@@ -84,3 +84,30 @@ def gaussian_bump(x, mean=0, maximum=1.0,  baseline=0, HWHM_a=1.0, attenuation=2
     
     return (maximum - baseline) * gaussian + baseline
 
+
+def combine_gaussian_bumps(gaussian_bumps, baseline):
+    """
+    This functions takes a list of gaussian_bumps
+    and returns the appropriate sum subtracting the 
+    """
+
+    sum_g = gaussian_bumps.pop()
+
+    for gb in gaussian_bumps:
+        sum_g += gb 
+        sum_g -= baseline
+    
+    return sum_g
+
+
+
+
+
+
+
+
+
+
+
+
+
