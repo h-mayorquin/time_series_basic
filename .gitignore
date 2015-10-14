@@ -70,3 +70,6 @@ target/
 *.aux
 *.bbl
 *.blg
+
+# Ipython notebook
+presentations/.ipynb_checkpoints/
