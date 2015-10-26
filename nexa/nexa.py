@@ -73,7 +73,7 @@ class Nexa():
 
         return classifier.stress_
 
-    def calculate_spatial_clustering(self, centers=False):
+    def calculate_spatial_clustering(self, centers=True):
         """
         This class calculates the spatial clustering. Once there is
         an embedding this function performs a clustering in the

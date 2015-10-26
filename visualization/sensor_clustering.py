@@ -11,7 +11,7 @@ from .aux import linear_to_matrix, linear_to_matrix_with_values
 
 def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
                              origin='upper', fontsize=16, aspect='auto',
-                             colorbar=False):
+                             colorbar=False, ax=None):
     """
     Documentation
     """
@@ -37,10 +37,19 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     xlabel = 'Lags'
     ylabel = 'Sensor'
 
-    fig = plt.figure(figsize=fig_size)
-    ax = fig.add_axes(axes_position)
-    im = plt.imshow(to_plot, interpolation=inter, cmap=cmap,
-                    origin=origin, aspect=aspect)
+    # If the axis is none it creates the figure, the axis and the image.
+    # Otherwise just add the figure to the axis and get the figure from it
+
+    if ax is None:
+        fig = plt.figure(figsize=fig_size)
+        ax = fig.add_axes(axes_position)
+        im = ax.imshow(to_plot, interpolation=inter, cmap=cmap,
+                       origin=origin, aspect=aspect)
+
+    else:
+        im = ax.imshow(to_plot, interpolation=inter, cmap=cmap,
+                       origin=origin, aspect=aspect)
+        fig = im.get_figure()
 
     # Se the labels and titles
     ax.set_xlabel(xlabel)
@@ -49,11 +58,13 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
 
     # Se the ticks names for x as the lags
     x_labels = nexa_object.sensors.lags
+    
     # ax.xaxis.set_major_formatter(plt.FixedFormatter(x_labels))
     # Set the axis every then lags
     # ax.xaxis.set_major_locator(plt.MultipleLocator(int(x_labels.size / 5)))
 
     # Change the font sizes
+    
     axes = fig.get_axes()
     for ax in axes:
         for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
@@ -67,4 +78,7 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
         cbar = fig.colorbar(im, cax=cax)
         cbar.solids.set_edgecolor('face')
 
-    return fig
+    if ax is None:
+        return fig
+    else:
+        return ax
