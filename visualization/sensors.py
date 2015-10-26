@@ -5,18 +5,19 @@ Visualize function realted to the sensors
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import seaborn as sns
+import numpy as np
 
 sns.set(style='white')
 
 
-def visualize_STDM_seaborn(nexa_object):
+def visualize_STDM_seaborn(nexa_object, ax=None):
     """
     Routine which plots using seaborn
     """
 
     to_plot = nexa_object.STDM
-
-    fig, ax = plt.subplots(figsize=(11, 9))
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(11, 9))
 
     # Generate a custom diverging colormap
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
@@ -29,7 +30,10 @@ def visualize_STDM_seaborn(nexa_object):
 
     plt.title('Spatio Temporal Distance Matrix (Distances)')
 
-    return fig
+    if ax is None:
+        return fig
+    else:
+        return ax
 
 
 def visualize_SLM(nexa_object, cmap='coolwarm', inter='none',
@@ -91,7 +95,7 @@ def visualize_SLM(nexa_object, cmap='coolwarm', inter='none',
 
 def visualize_SLM_axis(nexa_object, cmap='coolwarm', inter='none',
                        origin='upper', fontsize=16, aspect='auto',
-                       colorbar=True, ax=None):
+                       colorbar=True, ax=None, symmetry=True):
     """
     Document
     """
@@ -116,21 +120,28 @@ def visualize_SLM_axis(nexa_object, cmap='coolwarm', inter='none',
         axes_position = [0.1, 0.1, 0.8, 0.8]
         fig = plt.figure(figsize=fig_size)
         ax = fig.add_axes(axes_position)
-        
-    im = ax.imshow(to_plot, interpolation=inter, cmap=cmap,
-                    origin=origin, aspect=aspect)
 
+    if symmetry:
+        # We create symmetric vmin and vmax
+        max_value = np.abs(np.max(to_plot))
+        min_value = np.abs(np.min(to_plot))
+        vmax = np.max((max_value, min_value))
+        vmin = -vmax
+                    
+        im = ax.imshow(to_plot, interpolation=inter, vmin=vmin,
+                       vmax=vmax, cmap=cmap, origin=origin,
+                       aspect=aspect)
+    else:
+        im = ax.imshow(to_plot, interpolation=inter, cmap=cmap,
+                       origin=origin, aspect=aspect)
+
+    
     fig = im.get_figure()
     
     # Se the labels and titles
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_title(to_plot_title)
-
-    # Se the ticks names for x
-    # x_labels = np.arange(Nseries * Nseries + 1)
-    # ax.xaxis.set_major_formatter(plt.FixedFormatter(x_labels))
-    # ax.xaxis.set_major_locator(plt.MultipleLocator(1))
 
     # Change the font sizes
     axes = fig.get_axes()
