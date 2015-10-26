@@ -63,6 +63,7 @@ target/
 
 # Data 
 *ubyte
+results/
 
 # LatexFiles
 *.aux
@@ -73,3 +74,4 @@ target/
 
 # Ipython notebook
 presentations/.ipynb_checkpoints/
+
