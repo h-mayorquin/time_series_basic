@@ -10,7 +10,6 @@ from inputs.lag_structure import LagStructure
 from nexa.nexa import Nexa
 # Visualization libraries
 from visualization.sensor_clustering import visualize_cluster_matrix
-from visualization.sensors import visualize_SLM
 from visualization.sensors import visualize_SLM_axis
 from visualization.sensors import visualize_STDM_seaborn
 
@@ -56,9 +55,9 @@ def set_perceptual_space(gb1, gb2, dt):
     return perceptual_space
 
 
-def parameter_swep_SLE(base, distance, value):
+def parameter_swep_SLM(base, distance, value):
     """
-    Sweps parameter looking for the SLE
+    Sweps parameter looking for the SLM
     """
     Tmax = 1100
     dt = 1.0
@@ -192,6 +191,53 @@ def parameter_swep_cluster(base, distance, value):
     ax2 = fig.add_subplot(gs[1, 0])
     ax2.plot(time, gb2)
     ax2.set_ylim((0, max_rate + 20))
+
+    return fig
+
+def parameter_swep_cluster_SLM(base, distance, value):
+    """
+    Sweps parameter looking for the STDM
+    """
+    Tmax = 1100
+    dt = 1.0
+    time = np.arange(0, Tmax, dt)
+
+    # First we define the parameters 
+    max_rate = 450
+
+    Nspatial_clusters = 2  # Number of spatial clusters
+    Ntime_clusters = 4  # Number of time clusters
+    Nembedding = 2  # Dimension of the embedding space
+    
+    # Set the gaussian bumpbs
+    gb1, gb2 = set_gaussian_bumps(base, distance, value, time, max_rate)
+    # Get the perceptual_space
+    perceptual_space = set_perceptual_space(gb1, gb2, dt)
+
+
+    # Let's do the plotin here
+
+    gs = mpl.gridspec.GridSpec(2, 2)
+
+    fig = plt.figure(figsize=(16, 12))
+
+
+
+    # Now the Nexa object
+    nexa_object = Nexa(perceptual_space, Nspatial_clusters,
+                       Ntime_clusters, Nembedding)
+
+    nexa_object.calculate_distance_matrix()
+    nexa_object.calculate_embedding()
+    nexa_object.calculate_spatial_clustering()
+
+    # Visualize the cluster on the right side
+    ax1 = fig.add_subplot(gs[:, 1])
+    visualize_cluster_matrix(nexa_object, ax=ax1)
+    # Visualize the SLE on the left side
+    ax2 = fig.add_subplot(gs[:, 0])
+    visualize_SLM_axis(nexa_object, ax=ax2)
+
 
     return fig
 
