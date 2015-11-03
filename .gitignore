@@ -64,6 +64,7 @@ target/
 # Data 
 *ubyte
 results/
+data/
 
 # LatexFiles
 *.aux
