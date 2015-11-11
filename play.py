@@ -1,82 +1,60 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import seaborn as sns
+import h5py
+import IPython
 
-# Parmeter search
-from parameter_exploration.parameter_swep import parameter_swep_SLM
-from parameter_exploration.parameter_swep import parameter_swep_STDM
-from parameter_exploration.parameter_swep import parameter_swep_cluster
-from parameter_exploration.parameter_swep import parameter_swep_cluster_SLM
-from parameter_exploration.parameter_swep import create_filename
+from inputs.sensors import Sensor, PerceptualSpace
+from inputs.lag_structure import LagStructure
+from nexa.nexa import Nexa
 
-# Directory to save
-directory = './results/'
-name = 'parameter_swep_cluster'
-figure_format = '.png'
-    
-base = 10
-distance = 300
-value = 50
+# First we have to load the signal
+signal_location = './data/wall_street_data_small.hdf5'
 
-distances = np.linspace(0, 600, 601)
-bases = np.linspace(0, 200, 201)
-values = np.linspace(10, 200, 191)
+# Access the data and load it into signal
+with h5py.File(signal_location, 'r') as f:
+    dset = f['signal']
+    signals = np.empty(dset.shape, np.float)
+    dset.read_direct(signals)
 
-swep_distances = True
-swep_bases = True
-swep_values = True
-verbose = True
+# IPython.embed()
+# Reshape the data and limit it
+Ndata = 100000
+signals = signals.reshape(signals.shape[0], signals.shape[1] * signals.shape[2])
+# signals = signals[:Ndata, ...].astype('float')
+signals += np.random.uniform(size=signals.shape)
+print('zeros', np.sum(signals[0] == 0))
+print('signals shape', signals.shape)
 
-########
-# Swep distances
-########
+# PerceptualSpace
+dt = 1.0
+lag_times = np.arange(0, 10, 1)
+window_size = signals.shape[0] - (lag_times[-1] + 1)
+weights = None
 
-for base in bases:
-    for distance in distances:
-        for value in values:
-            if verbose:
-                print(base, distance, value)
-            # SLE
-            fig = parameter_swep_SLM(base, distance, value)
-            # Get the filename righ
-            name = 'parameter_swep'
-            name += '_SLM'
-            filename = create_filename(directory, name, figure_format, base, distance, value)
-            # Save the figure
-            plt.savefig(filename)
-            # Clear the figure
-            plt.close(fig)
+lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=window_size)
+sensors = [Sensor(signal, dt, lag_structure) for signal in signals.T]
+perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
-            # STDM
-            fig = parameter_swep_STDM(base, distance, value)
-            # Get the filename right
-            name = 'parameter_swep'
-            name += '_STDM'
-            filename = create_filename(directory, name, figure_format, base, distance, value)
-            # Save the figure
-            plt.savefig(filename)
-            # Clear the figure
-            plt.close(fig)
+# Get the nexa machinery right
+Nspatial_clusters = 3
+Ntime_clusters = 4
+Nembedding = 2
 
-            # Cluster
-            fig = parameter_swep_cluster(base, distance, value)
-            # Get the filename right
-            name = 'parameter_swep'
-            name += '_cluster'
-            filename = create_filename(directory, name, figure_format, base, distance, value)
-            # Save the figure
-            plt.savefig(filename)
-            # Clear the figure
-            plt.close(fig)
+nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
-            # Cluster-SLE
-            fig = parameter_swep_cluster_SLM(base, distance, value)
-            # Get the filename right
-            name = 'parameter_swep'
-            name += '_cluster_SLM'
-            filename = create_filename(directory, name, figure_format, base, distance, value)
-            # Save the figure
-            plt.savefig(filename)
-            # Clear the figure
-            plt.close(fig)
+# Now we calculate the distance matrix
+nexa_object.calculate_distance_matrix()
+nexa_object.calculate_embedding()
+
+# Now we calculate the clustering
+nexa_object.calculate_spatial_clustering()
+
+# The mapping
+nexa_object.calculate_cluster_to_indexes()
+
+# Data clusters
+nexa_object.calculate_time_clusters()
+
+# Calculate code vectors
+code_vectors = nexa_object.build_code_vectors()
