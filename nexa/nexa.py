@@ -168,3 +168,36 @@ class Nexa():
             code_vectors.append(vector)
 
         return code_vectors
+
+    def build_code_vectors_pairs(self):
+        """
+        This function should build pairs of code vectors
+        """
+
+        code_vectors = []
+        cluster_to_index = self.cluster_to_index
+        cluster_to_time_centers = self.cluster_to_time_centers
+
+        Nt = self.SLM.shape[1]
+
+        # Now let's get the timing right
+        dt = self.sensors.sensors[0].dt
+        lag_index = int(self.sensors.sensors[0].lag_structure.lag_times[-1] / dt)
+        initial_time = self.sensors.data_size - lag_index - self.sensors.Nwindow_size
+        time = initial_time
+        
+        for t in range(Nt):
+            vector = np.zeros(self.Nspatial_clusters)
+            for Ncluster, cluster_indexes in cluster_to_index.items():
+                cluster_data = self.SLM[cluster_indexes, t]
+                time_centers = cluster_to_time_centers[Ncluster]
+                dot = np.dot(time_centers, cluster_data)
+                vector[Ncluster] = np.argmax(dot)
+
+            # Now we save the paris
+            code_vectors.append((time, vector))
+            # We increase the time
+            time += dt
+
+        return code_vectors
+

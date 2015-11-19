@@ -353,6 +353,39 @@ class TestPerceptualSpace(TestCase):
         nptest.assert_array_almost_equal(result1, first_row)
         nptest.assert_array_almost_equal(result2, second_row)
 
+
+    def test_SLM_columns_to_time_map(self):
+        """
+        This tests that the map that converts the associates the columns
+        of the SLM with times. This is done in such a way that each
+        coulmn is mapped to the time that matches the most lagged element
+        in lag_back
+        """
+
+        # Build signal
+        signal1 = np.arange(1, 11, 1.0)
+        signal2 = np.arange(-1, -11, -1.0)
+        # Add noise
+        signal1 += np.random.uniform(size=signal1.shape) * 0.01
+        signal2 += np.random.uniform(size=signal1.shape) * 0.01
+        # Pack them
+        signals = [signal1, signal2]
+
+        # PerceptualSpace
+        dt = 1.0
+        lag_times = np.arange(0, 3, 1)
+        window_size = 8
+        weights = None
+
+        lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=window_size)
+        # sensors = [Sensor(signal1, dt, lag_structure,), Sensor(signal2, dt, lag_structure)]
+        sensors = [Sensor(signal, dt, lag_structure) for signal in signals]
+        perceptual_space = PerceptualSpace(sensors, lag_first=True)
+
+        times = perceptual_space.map_SLM_columns_to_time()
+        result = np.array((0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0))
+        nptest.assert_array_almost_equal(result, times)
+
         
 if __name__ == '__main__':
     unittest.main()
