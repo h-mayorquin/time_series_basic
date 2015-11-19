@@ -180,11 +180,7 @@ class Nexa():
 
         Nt = self.SLM.shape[1]
 
-        # Now let's get the timing right
-        dt = self.sensors.sensors[0].dt
-        lag_index = int(self.sensors.sensors[0].lag_structure.lag_times[-1] / dt)
-        initial_time = self.sensors.data_size - lag_index - self.sensors.Nwindow_size
-        time = initial_time
+        times = self.sensors.map_SLM_columns_to_time()
         
         for t in range(Nt):
             vector = np.zeros(self.Nspatial_clusters)
@@ -195,9 +191,7 @@ class Nexa():
                 vector[Ncluster] = np.argmax(dot)
 
             # Now we save the paris
-            code_vectors.append((time, vector))
-            # We increase the time
-            time += dt
+            code_vectors.append((times[t], vector))
 
         return code_vectors
 
