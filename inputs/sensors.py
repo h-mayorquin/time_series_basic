@@ -58,7 +58,10 @@ class Sensor:
         last_index = int(lag_structure.lag_times[-1] / dt)
         max_delay_size = data.size - last_index - self.Nwindow_size
 
-        if(max_delay_size <= 0):
+        if(max_delay_size < 0):
+            print(data.size)
+            print(last_index)
+            print(self.Nwindow_size)
             error_string = "Last window goes out of data"
             suggestion = ", Change the window size or the lag_times"
             information = ", The max delay is:" + str(max_delay_size)
@@ -170,3 +173,31 @@ class PerceptualSpace:
             self.calculate_SLM()
 
         return np.corrcoef(self.SLM)
+
+    def map_SLM_columns_to_time(self):
+        """
+        This creates an association from the columns of SLM
+        to the earliest time that af the delayed signals can 
+        be associated to. 
+
+        It should return a vector whose length is equal to
+        SLM.shape[0] where the first element should be the
+        time associated with the signal that is the most far
+        back in time
+        """
+        dt = self.sensors[0].dt
+
+        # This works for self_back
+        lag_index = int(self.sensors[0].lag_structure.lag_times[-1] / dt)
+        initial_index = self.data_size - lag_index - self.Nwindow_size
+        initial_time = initial_index / dt
+        # Intialize vector to return
+        times = np.zeros(self.Nwindow_size)
+
+        # Loop advancing by dt
+        time = initial_time
+        for index in range(self.Nwindow_size):
+            times[index] = time
+            time += dt
+
+        return times

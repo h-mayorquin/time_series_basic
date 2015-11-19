@@ -114,12 +114,22 @@ class test_sensors(TestCase):
     def test_window_size_vs_size_of_data(self):
         """
         This test that the window does not get out of the
-        range of data for the last lag
+        range of data for the last lag. 
+
+        This method only works for push back
         """
-        data = np.arange(1000)
-        dt = 0.1
-        lag_times = np.arange(90)
-        window_size = 11.0
+        T = 10
+        dt = 0.3
+        Nt = T / dt
+        epislon = 1.0
+        last_lag = 3.0
+        
+        data = np.arange(Nt)
+        lag_times = np.zeros(10)
+        lag_times[-1] = T - last_lag  # Put the lag at where wanted
+
+        # The windo size gets out of its place by epislon
+        window_size = 3.0 + epislon
         lag_structure = LagStructure(lag_times, window_size=window_size)
 
         with self.assertRaises(IndexError):
@@ -343,6 +353,6 @@ class TestPerceptualSpace(TestCase):
         nptest.assert_array_almost_equal(result1, first_row)
         nptest.assert_array_almost_equal(result2, second_row)
 
-
+        
 if __name__ == '__main__':
     unittest.main()
