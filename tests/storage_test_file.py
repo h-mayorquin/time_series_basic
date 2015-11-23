@@ -3,7 +3,11 @@ This file can be used to test the storage
 """
 
 import numpy as np
-from signals.aux_functions import gaussian_bump
+import sys
+# Somehow has to be run from ipython
+sys.path.append('../')
+print(sys.path)
+from signals.aux_funipctions import gaussian_bump
 from inputs.sensors import Sensor, PerceptualSpace
 from inputs.lag_structure import LagStructure
 
