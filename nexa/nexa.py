@@ -38,13 +38,14 @@ class Nexa():
         if SLM is None:
             self.SLM = self.sensors.calculate_SLM()
 
+        self.Nlags = sensors.nlags
+
         # Initiate values for the methods
         self.STDM = None
         self.embedding = None
         self.index_to_cluster = None
         self.cluster_to_index = None
         self.cluster_to_time_centers = None
-        self.dimensions_of_embedding_space = None
 
     def calculate_distance_matrix(self):
         self.STDM = self.sensors.calculate_STDM()

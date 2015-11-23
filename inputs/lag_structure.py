@@ -40,7 +40,7 @@ class LagStructure(object):
 
         if window_size < 0:
             raise ValueError("Windows size should be positive")
-
+ 
         if (not (sorted(lag_times) == lag_times).all()):
             raise ValueError("lag_times must come in sorted order")
 
