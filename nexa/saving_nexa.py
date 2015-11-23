@@ -24,7 +24,7 @@ class NexaSaverHDF5():
 
         self.filename = self.folder + name + self.extension
         print('Creating a data base at: \n')
-        print(self.filename)
+        print(self.filename + ' with mode ' + mode)
         self.f = h5py.File(self.filename, mode)
 
     def save_complete_run(self, nexa_object, lag_type='lag_structure'):
@@ -61,6 +61,7 @@ class NexaSaverHDF5():
         f[file_level].attrs['window_size'] = a_sensor.lag_structure.window_size
         f[file_level].attrs['Nwindow_size'] = nexa_object.sensors.Nwindow_size
         f[file_level].attrs['Nlags'] = nexa_object.Nlags
+        f[file_level].attrs['Nsensors'] = nexa_object.Nsensors
         f[file_level].attrs['format of spatial'] = 'Nspatial_clusters-Ntime_clusters-Nembedding'
         f[file_level].attrs['lags_first'] = nexa_object.lags_first
 
@@ -91,7 +92,6 @@ class NexaSaverHDF5():
         f[file_level].attrs['Nspatial_clusters'] = nexa_object.Nspatial_clusters
         f[file_level].attrs['Ntime_clusters'] = nexa_object.Ntime_clusters
         f[file_level].attrs['Nembeeding'] = nexa_object.Nembedding
-        f[file_level].attrs['Nlags'] = nexa_object.Nlags
         f[file_level].attrs['Git'] = 'Not implemented yet'
 
         # Create cluster to index map

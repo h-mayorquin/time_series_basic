@@ -7,7 +7,7 @@ import sys
 # Somehow has to be run from ipython
 sys.path.append('../')
 print(sys.path)
-from signals.aux_funipctions import gaussian_bump
+from signals.aux_functions import gaussian_bump
 from inputs.sensors import Sensor, PerceptualSpace
 from inputs.lag_structure import LagStructure
 
@@ -56,9 +56,9 @@ nexa_object = Nexa(perceptual_space, Nspatial_clusters,
                    Ntime_clusters, Nembedding)
 
 nexa_object.calculate_all()
-name = 'class_test'
+name = 'class_test2'
 
 from nexa.saving_nexa import NexaSaverHDF5
 
-saver = NexaSaverHDF5(name, 'a')
+saver = NexaSaverHDF5(name, 'w')
 saver.save_complete_run(nexa_object, 'type2')

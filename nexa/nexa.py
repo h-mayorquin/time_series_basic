@@ -38,7 +38,8 @@ class Nexa():
         if SLM is None:
             self.SLM = self.sensors.calculate_SLM()
 
-        self.Nlags = sensors.nlags
+        self.Nlags = self.sensors.nlags
+        self.Nsensors = len(self.sensors.sensors)
 
         # Initiate values for the methods
         self.STDM = None
