@@ -76,3 +76,5 @@ data/
 # Ipython notebook
 presentations/.ipynb_checkpoints/
 
+# HDF5
+*.hdf5

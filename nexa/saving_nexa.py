@@ -51,7 +51,7 @@ class NexaSaverHDF5():
         f[file_level + name_to_store] = nexa_object.SLM
         # Lags
         name_to_store = 'lags'
-        f[file_level + name_to_store] = a_sensor.lag_structure.window_size
+        f[file_level + name_to_store] = a_sensor.lag_structure.lag_times
         # Weights or filters
         name_to_store = 'weights'
         f[file_level + name_to_store] = a_sensor.lag_structure.weights

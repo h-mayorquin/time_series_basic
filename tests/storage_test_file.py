@@ -6,7 +6,6 @@ import numpy as np
 import sys
 # Somehow has to be run from ipython
 sys.path.append('../')
-print(sys.path)
 from signals.aux_functions import gaussian_bump
 from inputs.sensors import Sensor, PerceptualSpace
 from inputs.lag_structure import LagStructure
@@ -27,6 +26,7 @@ center2 = center1 + distance
 # Create the gaussian bumpbs
 gb1 = gaussian_bump(time, center1, max_rate, base, value, attenuation)
 gb2 = gaussian_bump(time, center2, max_rate, base, value, attenuation)
+
 
 # Add some noise
 gb1 += np.random.rand(gb1.size)
@@ -57,6 +57,7 @@ nexa_object = Nexa(perceptual_space, Nspatial_clusters,
 
 nexa_object.calculate_all()
 name = 'class_test2'
+code_vectors = nexa_object.build_code_vectors_distance()
 
 from nexa.saving_nexa import NexaSaverHDF5
 

@@ -140,7 +140,7 @@ class Nexa():
         self.calculate_cluster_to_indexes()
         self.calculate_time_clusters()
 
-    def build_code_vectors(self):
+    def build_code_vectors(self, type='distance'):
         """
         A function that builds the code vectors for the current
         SLM
@@ -149,7 +149,7 @@ class Nexa():
         points you have.
 
         Each code vector will have size equal to the number of
-        spatial cluster. Each spatial cluster will b given a
+        spatial cluster. Each spatial cluster will be given a
         value according to which time cluster the piece of data
         is closer too.
         """
@@ -163,7 +163,7 @@ class Nexa():
             vector = np.zeros(self.Nspatial_clusters)
             for Ncluster, cluster_indexes in cluster_to_index.items():
                 cluster_data = self.SLM[cluster_indexes, t]
-                time_centers = cluster_to_time_centers[Ncluster]
+                time_centers = cluster_to_time_centers[Ncluster] 
                 dot = np.dot(time_centers, cluster_data)
                 vector[Ncluster] = np.argmax(dot)
 
@@ -171,6 +171,28 @@ class Nexa():
 
         return code_vectors
 
+    
+    def build_code_vectors_distance(self):
+        code_vectors = []
+        cluster_to_index = self.cluster_to_index
+        cluster_to_time_centers = self.cluster_to_time_centers
+
+        Nt = self.SLM.shape[1]
+        for t in range(Nt):
+            vector = np.ones(self.Nspatial_clusters * self.Ntime_clusters)
+            for Ncluster, cluster_indexes in cluster_to_index.items():
+                cluster_data = self.SLM[cluster_indexes, t]
+                time_centers = cluster_to_time_centers[Ncluster]
+                for time_center_index, time_center in enumerate(time_centers):
+                    distance = np.linalg.norm(time_center - cluster_data)
+                    vector_index = Ncluster * self.Ntime_clusters + time_center_index
+                    vector[vector_index] = distance
+
+            code_vectors.append(vector)
+
+        return code_vectors
+
+    
     def build_code_vectors_pairs(self):
         """
         This function should build pairs of code vectors
