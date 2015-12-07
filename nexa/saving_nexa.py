@@ -78,7 +78,15 @@ class NexaSaverHDF5():
         # Code vectors
         name_to_store = '/code vectors'
         f[file_level + name_to_store] = nexa_object.build_code_vectors()
-        f[file_level + name_to_store].attrs['Type of Code'] = 'Type of Code'
+
+        name_to_store = '/code vectors_distance'
+        f[file_level + name_to_store] = nexa_object.build_code_vectors_distance()
+
+        name_to_store = '/code vectors_winner'
+        f[file_level + name_to_store] = nexa_object.build_code_vectors_winner()
+
+        name_to_store = '/code vectors_softmax'
+        f[file_level + name_to_store] = nexa_object.build_code_vectors_softmax()
 
         # Time
         name_to_store = '/time'
@@ -167,7 +175,15 @@ class NexaSaverHDF5():
         # Code vectors
         name_to_store = '/code vectors'
         f[file_level + name_to_store] = nexa_object.build_code_vectors()
-        f[file_level + name_to_store].attrs['Type of Code'] = 'Type of Code'
+
+        name_to_store = '/code vectors_distance'
+        f[file_level + name_to_store] = nexa_object.build_code_vectors_distance()
+
+        name_to_store = '/code vectors_winner'
+        f[file_level + name_to_store] = nexa_object.build_code_vectors_winner()
+
+        name_to_store = '/code vectors_softmax'
+        f[file_level + name_to_store] = nexa_object.build_code_vectors_softmax()
 
         # Time
         name_to_store = '/time'

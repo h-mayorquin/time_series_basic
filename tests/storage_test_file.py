@@ -56,10 +56,10 @@ nexa_object = Nexa(perceptual_space, Nspatial_clusters,
                    Ntime_clusters, Nembedding)
 
 nexa_object.calculate_all()
-name = 'class_test2'
+name = 'new_test'
 code_vectors = nexa_object.build_code_vectors_distance()
 
 from nexa.saving_nexa import NexaSaverHDF5
 
 saver = NexaSaverHDF5(name, 'w')
-saver.save_complete_run(nexa_object, 'type2')
+saver.save_complete_run(nexa_object, 'Hola')
