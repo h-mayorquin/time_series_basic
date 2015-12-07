@@ -164,22 +164,50 @@ class Nexa():
             for Ncluster, cluster_indexes in cluster_to_index.items():
                 cluster_data = self.SLM[cluster_indexes, t]
                 time_centers = cluster_to_time_centers[Ncluster] 
-                dot = np.dot(time_centers, cluster_data)
-                vector[Ncluster] = np.argmax(dot)
+                dot = np.linalg.norm(time_centers - cluster_data, axis=1)
+                vector[Ncluster] = np.argmin(dot)
 
             code_vectors.append(vector)
 
         return code_vectors
 
-    
-    def build_code_vectors_distance(self):
+    def build_code_vectors_winner(self, type='distance'):
+        """
+        Binary representaiton with winner takes all
+        """
         code_vectors = []
         cluster_to_index = self.cluster_to_index
         cluster_to_time_centers = self.cluster_to_time_centers
 
         Nt = self.SLM.shape[1]
         for t in range(Nt):
-            vector = np.ones(self.Nspatial_clusters * self.Ntime_clusters)
+            vector = np.zeros(self.Nspatial_clusters * self.Ntime_clusters)
+            for Ncluster, cluster_indexes in cluster_to_index.items():
+                cluster_data = self.SLM[cluster_indexes, t]
+                time_centers = cluster_to_time_centers[Ncluster]
+                distance = np.linalg.norm(time_centers - cluster_data, axis=1)
+                time_index = np.argmin(distance)
+                vector_index = Ncluster * self.Ntime_clusters + time_index
+                vector[vector_index] = 1
+
+            code_vectors.append(vector)
+
+        return code_vectors
+
+
+    
+    def build_code_vectors_distance(self):
+        """
+        Binary representation with distance.
+        """
+        code_vectors = []
+        cluster_to_index = self.cluster_to_index
+        cluster_to_time_centers = self.cluster_to_time_centers
+
+        Nt = self.SLM.shape[1]
+        for t in range(Nt):
+            vector = np.zeros(self.Nspatial_clusters * self.Ntime_clusters)
+
             for Ncluster, cluster_indexes in cluster_to_index.items():
                 cluster_data = self.SLM[cluster_indexes, t]
                 time_centers = cluster_to_time_centers[Ncluster]
@@ -188,34 +216,38 @@ class Nexa():
                     vector_index = Ncluster * self.Ntime_clusters + time_center_index
                     vector[vector_index] = distance
 
-            code_vectors.append(vector)
+                code_vectors.append(vector)
 
         return code_vectors
 
-    
-    def build_code_vectors_pairs(self):
+    def build_code_vectors_softmax(self):
         """
-        This function should build pairs of code vectors
+        Binary representation with softmax.
         """
-
         code_vectors = []
         cluster_to_index = self.cluster_to_index
         cluster_to_time_centers = self.cluster_to_time_centers
 
         Nt = self.SLM.shape[1]
-
-        times = self.sensors.map_SLM_columns_to_time()
-        
         for t in range(Nt):
-            vector = np.zeros(self.Nspatial_clusters)
+            vector = np.zeros(self.Nspatial_clusters * self.Ntime_clusters)
+
             for Ncluster, cluster_indexes in cluster_to_index.items():
                 cluster_data = self.SLM[cluster_indexes, t]
                 time_centers = cluster_to_time_centers[Ncluster]
-                dot = np.dot(time_centers, cluster_data)
-                vector[Ncluster] = np.argmax(dot)
+                sensor_vector = np.ones(self.Ntime_clusters)
+                for time_center_index, time_center in enumerate(time_centers):
+                    distance = np.linalg.norm(time_center - cluster_data)
+                    exp = np.exp(-distance)
+                    # vector_index = Ncluster * self.Ntime_clusters + time_center_index
+                    sensor_vector[time_center_index] = exp
+                    sensor_vector /= sensor_vector.sum()
 
-            # Now we save the paris
-            code_vectors.append((times[t], vector))
+                # Now let's put into the big vector
+                start = Ncluster * self.Ntime_clusters
+                end = (Ncluster + 1) * self.Ntime_clusters
+                vector[start:end] = sensor_vector
+
+            code_vectors.append(vector)
 
         return code_vectors
-
