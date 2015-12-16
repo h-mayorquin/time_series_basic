@@ -5,6 +5,7 @@ import numpy as np
 from sklearn import manifold, cluster
 
 from inputs.sensors import PerceptualSpace
+from aux_functions import softmax_base
 
 
 class Nexa():
@@ -238,10 +239,7 @@ class Nexa():
                 sensor_vector = np.ones(self.Ntime_clusters)
                 for time_center_index, time_center in enumerate(time_centers):
                     distance = np.linalg.norm(time_center - cluster_data)
-                    exp = np.exp(-distance)
-                    # vector_index = Ncluster * self.Ntime_clusters + time_center_index
-                    sensor_vector[time_center_index] = exp
-                    sensor_vector /= sensor_vector.sum()
+                    sensor_vector = softmax_base(-distance)
 
                 # Now let's put into the big vector
                 start = Ncluster * self.Ntime_clusters
