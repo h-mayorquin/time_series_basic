@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from .aux import linear_to_matrix, linear_to_matrix_with_values
+import nexa.loading as load
 
 
 def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
@@ -19,9 +20,10 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     Nlags = nexa_object.sensors.nlags
     Nsensors = nexa_object.sensors.Nsensors
     values = nexa_object.index_to_cluster
+    lags_first = nexa_object.lags_first
 
     to_plot = linear_to_matrix_with_values(values, Nsensors,
-                                           Nlags, nexa_object.lags_first)
+                                           Nlags, lags_first)
 
     # First the parameters
     to_plot_title = 'Clustering asigned to sensors'
@@ -56,15 +58,76 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     ax.set_ylabel(ylabel)
     ax.set_title(to_plot_title)
 
-    # Se the ticks names for x as the lags
-    x_labels = nexa_object.sensors.lags
+    # Change the font sizes
+    axes = fig.get_axes()
+    for ax in axes:
+        for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
+                     ax.get_xticklabels() + ax.get_yticklabels()):
+            item.set_fontsize(fontsize)
+
+    # Colorbar (This makes the axes to display proper)
+    if colorbar:
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        cbar = fig.colorbar(im, cax=cax)
+        cbar.solids.set_edgecolor('face')
+
+    if ax is None:
+        return fig
+    else:
+        return ax
+
     
-    # ax.xaxis.set_major_formatter(plt.FixedFormatter(x_labels))
-    # Set the axis every then lags
-    # ax.xaxis.set_major_locator(plt.MultipleLocator(int(x_labels.size / 5)))
+def visualize_cluster_matrix_hdf5(database, run_name, nexa_arrangement,
+                                  cmap='coolwarm', inter='none',
+                                  origin='upper', fontsize=16, aspect='auto',
+                                  colorbar=False, ax=None):
+    """
+    This plots the clustering matrix extracting it from hdf5
+    """
+    attrs = database[run_name].attrs
+    Nlags = attrs['Nlags']
+    Nsensors = attrs['Nsensors']
+    values = load.get_index_to_cluster_hdf5(database, run_name, nexa_arrangement)
+    lags_first = attrs['lags_first']
+
+    to_plot = linear_to_matrix_with_values(values, Nsensors,
+                                           Nlags, lags_first)
+
+    # First the parameters
+    to_plot_title = 'Clustering asigned to sensors'
+
+    cmap = cmap
+    inter = inter
+    origin = origin
+
+    fontsize = fontsize  # The fontsize
+    fig_size = (16, 12)
+    axes_position = [0.1, 0.1, 0.8, 0.8]
+
+    xlabel = 'Lags'
+    ylabel = 'Sensor'
+
+    # If the axis is none it creates the figure, the axis and the image.
+    # Otherwise just add the figure to the axis and get the figure from it
+
+    if ax is None:
+        fig = plt.figure(figsize=fig_size)
+        ax = fig.add_axes(axes_position)
+        im = ax.imshow(to_plot, interpolation=inter, cmap=cmap,
+                       origin=origin, aspect=aspect)
+
+    else:
+        im = ax.imshow(to_plot, interpolation=inter, cmap=cmap,
+                       origin=origin, aspect=aspect)
+        fig = im.get_figure()
+
+    # Se the labels and titles
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.set_title(to_plot_title)
 
     # Change the font sizes
-    
     axes = fig.get_axes()
     for ax in axes:
         for item in ([ax.title, ax.xaxis.label, ax.yaxis.label] +
