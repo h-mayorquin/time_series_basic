@@ -1,5 +1,7 @@
 """
-This generates the data and stores it in HDF5
+This loads the data of the a text from an hdf5 file. Then
+ir runs nexa and stores the results as a tradiditional nexa saver
+
 """
 
 import numpy as np
@@ -11,7 +13,7 @@ from nexa.saving import NexaSaverHDF5
 import h5py
 
 
-signal_location = './data/wall_street_data_small.hdf5'
+signal_location = './data/wall_street_data.hdf5'
 
 # Access the data and load it into signal
 with h5py.File(signal_location, 'r') as f:
@@ -21,7 +23,7 @@ with h5py.File(signal_location, 'r') as f:
 
 
 # Reshape the data and limit it
-Ndata = 100000
+Ndata = 100
 signals = signals.reshape(signals.shape[0], signals.shape[1] * signals.shape[2])
 # signals = signals[:Ndata, ...].astype('float')
 signals += np.random.uniform(size=signals.shape) * 0.1
@@ -38,9 +40,9 @@ sensors = [Sensor(signal, dt, lag_structure) for signal in signals.T]
 perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
 # Get the nexa machinery right
-Nspatial_clusters = 3
-Ntime_clusters = 4
-Nembedding = 2
+Nspatial_clusters = 5
+Ntime_clusters = 20
+Nembedding = 3
 
 nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
@@ -48,7 +50,7 @@ nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembeddi
 # nexa_object.calculate_all()
 # Now we calculate the distance matrix
 nexa_object.calculate_distance_matrix()
-print(nexa_object.STDM.shape)
+print('STDM shape', nexa_object.STDM.shape)
 print('Distance matrix calculated')
 nexa_object.calculate_embedding()
 print('Embedding calculated')
@@ -60,7 +62,9 @@ nexa_object.calculate_time_clusters()
 print('Time clusters calculated')
 
 # Save everything
-name = 'text_wall_street'
-saver = NexaSaverHDF5(name, 'w')
-saver.save_complete_run(nexa_object, 'normal')
+data_base_name = 'text_wall_street'
+run_name = 'low_resolution-' + str(Nspatial_clusters)
+run_name += '-' + str(Ntime_clusters)
+saver = NexaSaverHDF5(data_base_name, 'a')
+saver.save_complete_run(nexa_object, run_name)
 print('Saved')
