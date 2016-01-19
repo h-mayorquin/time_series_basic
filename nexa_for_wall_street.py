@@ -42,7 +42,7 @@ perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
 # Get the nexa machinery right
 Nspatial_clusters = 5
-Ntime_clusters = 20
+Ntime_clusters = 45
 Nembedding = 3
 nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
@@ -66,7 +66,5 @@ data_base_name = 'text_wall_street'
 saver = NexaSaverHDF5(data_base_name, 'a')
 # Save 
 run_name = 'low-resolution'
-# run_name += '-' + str(Nspatial_clusters)
-# run_name += '-' + str(Ntime_clusters)
 saver.save_complete_run(nexa_object, run_name)
 print('Saved')

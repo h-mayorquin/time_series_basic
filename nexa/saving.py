@@ -23,7 +23,7 @@ class NexaSaverHDF5():
         """
 
         self.filename = self.folder + name + self.extension
-        print('Creating a data base at: \n')
+        print('Creating a data base at:')
         print(self.filename + ' with mode ' + mode)
         self.f = h5py.File(self.filename, mode)
 

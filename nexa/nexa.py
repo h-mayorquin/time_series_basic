@@ -196,7 +196,6 @@ class Nexa():
         return code_vectors
 
 
-    
     def build_code_vectors_distance(self):
         """
         Binary representation with distance.
@@ -216,8 +215,9 @@ class Nexa():
                     distance = np.linalg.norm(time_center - cluster_data)
                     vector_index = Ncluster * self.Ntime_clusters + time_center_index
                     vector[vector_index] = distance
-
-                code_vectors.append(vector)
+                    
+            # After the calculation move the vector to the list
+            code_vectors.append(vector)
 
         return code_vectors
 
