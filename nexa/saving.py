@@ -27,7 +27,7 @@ class NexaSaverHDF5():
         print(self.filename + ' with mode ' + mode)
         self.f = h5py.File(self.filename, mode)
 
-    def save_complete_run(self, nexa_object, lag_type='lag_structure'):
+    def save_complete_run(self, nexa_object, run_name='lag_structure'):
         """
         This file saves a complete run of the nexa framework.
         It should be used after the simulation was run and it serves
@@ -43,27 +43,36 @@ class NexaSaverHDF5():
         
         # Time structure
         root = '/'
-        lag_structure_type = lag_type
+        lag_structure_type = run_name
         file_level = root + lag_structure_type + '/'
-        
-        # SLM
-        name_to_store = 'SLM'
-        f[file_level + name_to_store] = nexa_object.SLM
-        # Lags
-        name_to_store = 'lags'
-        f[file_level + name_to_store] = a_sensor.lag_structure.lag_times
-        # Weights or filters
-        name_to_store = 'weights'
-        f[file_level + name_to_store] = a_sensor.lag_structure.weights
+        # import IPython
+        # IPython.embed()
 
-        # Attributes
-        f[file_level].attrs['dt'] = a_sensor.dt
-        f[file_level].attrs['window_size'] = a_sensor.lag_structure.window_size
-        f[file_level].attrs['Nwindow_size'] = nexa_object.sensors.Nwindow_size
-        f[file_level].attrs['Nlags'] = nexa_object.Nlags
-        f[file_level].attrs['Nsensors'] = nexa_object.Nsensors
-        f[file_level].attrs['format of spatial'] = 'Nspatial_clusters-Ntime_clusters-Nembedding'
-        f[file_level].attrs['lags_first'] = nexa_object.lags_first
+        # If that directory is not already add it and all the quantities
+        # Otherwise skip to the level bellow
+        if file_level not in f.keys():
+            print('Accesing database for the first time')
+            # SLM
+            name_to_store = 'SLM'
+            f[file_level + name_to_store] = nexa_object.SLM
+            # STDM
+            name_to_store = 'STDM'
+            f[file_level + name_to_store] = nexa_object.STDM
+            # Lags
+            name_to_store = 'lags'
+            f[file_level + name_to_store] = a_sensor.lag_structure.lag_times
+            # Weights or filters
+            name_to_store = 'weights'
+            f[file_level + name_to_store] = a_sensor.lag_structure.weights
+
+            # Attributes
+            f[file_level].attrs['dt'] = a_sensor.dt
+            f[file_level].attrs['window_size'] = a_sensor.lag_structure.window_size
+            f[file_level].attrs['Nwindow_size'] = nexa_object.sensors.Nwindow_size
+            f[file_level].attrs['Nlags'] = nexa_object.Nlags
+            f[file_level].attrs['Nsensors'] = nexa_object.Nsensors
+            f[file_level].attrs['format of spatial'] = 'Nspatial_clusters-Ntime_clusters-Nembedding'
+            f[file_level].attrs['lags_first'] = nexa_object.lags_first
 
         # Nexa structure
         spatial_name = str(nexa_object.Nspatial_clusters) + '-'
@@ -72,20 +81,17 @@ class NexaSaverHDF5():
 
         file_level += spatial_name + '/'
 
-        name_to_store = 'STDM'
-        f[file_level + name_to_store] = nexa_object.STDM
-
         # Code vectors
-        name_to_store = '/code vectors'
+        name_to_store = '/code-vectors'
         f[file_level + name_to_store] = nexa_object.build_code_vectors()
 
-        name_to_store = '/code vectors_distance'
+        name_to_store = '/code-vectors-distance'
         f[file_level + name_to_store] = nexa_object.build_code_vectors_distance()
 
-        name_to_store = '/code vectors_winner'
+        name_to_store = '/code-vectors-winner'
         f[file_level + name_to_store] = nexa_object.build_code_vectors_winner()
 
-        name_to_store = '/code vectors_softmax'
+        name_to_store = '/code-vectors-softmax'
         f[file_level + name_to_store] = nexa_object.build_code_vectors_softmax()
 
         # Time
@@ -117,7 +123,7 @@ class NexaSaverHDF5():
         # Close the file
         f.close()
 
-    def save_SLM_processing(self, nexa_object, lag_type='lag_structure'):
+    def save_SLM_processing(self, nexa_object, run_name='lag_structure'):
         """
         This saves the production of the SLM
         """
@@ -128,7 +134,7 @@ class NexaSaverHDF5():
         
         # Time structure
         root = '/'
-        lag_structure_type = lag_type
+        lag_structure_type = run_name
         file_level = root + lag_structure_type + '/'
         
         # SLM
@@ -149,7 +155,7 @@ class NexaSaverHDF5():
         f[file_level].attrs['format of spatial'] = 'Nspatial_clusters-Ntime_clusters-Nembedding'
 
 
-    def save_nexa_processing(self, nexa_object, lag_type='lag_structure'):
+    def save_nexa_processing(self, nexa_object, run_name='lag_structure'):
         """
         This saves the nexa part after the SLM and the temporal part have been
         saved
@@ -159,7 +165,7 @@ class NexaSaverHDF5():
         
         # Time structure
         root = '/'
-        lag_structure_type = lag_type
+        lag_structure_type = run_name
         file_level = root + lag_structure_type + '/'
 
         # Nexa structure

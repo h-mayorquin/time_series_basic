@@ -31,7 +31,8 @@ print('zeros', np.sum(signals[0] == 0))
 print('signals shape', signals.shape)
 
 dt = 1.0
-lag_times = np.arange(0, 10, 1)
+lag_times = np.arange(0, 5, 1)
+# lag_times = np.arange(0, 3, 1)  # For testing purposes
 window_size = signals.shape[0] - (lag_times[-1] + 1)
 weights = None
 
@@ -43,7 +44,6 @@ perceptual_space = PerceptualSpace(sensors, lag_first=True)
 Nspatial_clusters = 5
 Ntime_clusters = 20
 Nembedding = 3
-
 nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
 # Calculate
@@ -61,10 +61,12 @@ print('Cluster to index calculated')
 nexa_object.calculate_time_clusters()
 print('Time clusters calculated')
 
-# Save everything
+# Open the saver 
 data_base_name = 'text_wall_street'
-run_name = 'low_resolution-' + str(Nspatial_clusters)
-run_name += '-' + str(Ntime_clusters)
 saver = NexaSaverHDF5(data_base_name, 'a')
+# Save 
+run_name = 'low-resolution'
+# run_name += '-' + str(Nspatial_clusters)
+# run_name += '-' + str(Ntime_clusters)
 saver.save_complete_run(nexa_object, run_name)
 print('Saved')
