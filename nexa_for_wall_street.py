@@ -40,31 +40,41 @@ lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=w
 sensors = [Sensor(signal, dt, lag_structure) for signal in signals.T]
 perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
+# Quantities to scale
+time_clustering_collection = np.arange(5, 55, 5)
+spatial_clustering_collection = np.arange(3, 11, 1)
+
 # Get the nexa machinery right
-Nspatial_clusters = 5
-Ntime_clusters = 45
+
 Nembedding = 3
-nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
-# Calculate
-# nexa_object.calculate_all()
-# Now we calculate the distance matrix
-nexa_object.calculate_distance_matrix()
-print('STDM shape', nexa_object.STDM.shape)
-print('Distance matrix calculated')
-nexa_object.calculate_embedding()
-print('Embedding calculated')
-nexa_object.calculate_spatial_clustering()
-print('Spatial clustering calculated')
-nexa_object.calculate_cluster_to_indexes()
-print('Cluster to index calculated')
-nexa_object.calculate_time_clusters()
-print('Time clusters calculated')
 
-# Open the saver 
-data_base_name = 'text_wall_street'
-saver = NexaSaverHDF5(data_base_name, 'a')
-# Save 
-run_name = 'low-resolution'
-saver.save_complete_run(nexa_object, run_name)
-print('Saved')
+for Ntime_clusters in time_clustering_collection:
+    for Nspatial_clusters in spatial_clustering_collection:
+        print('Ntime clusters', Ntime_clusters)
+        print('Nspatial_clusters', Nspatial_clusters)
+        
+        nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
+
+        # Calculate
+        # nexa_object.calculate_all()
+        # Now we calculate the distance matrix
+        nexa_object.calculate_distance_matrix()
+        print('STDM shape', nexa_object.STDM.shape)
+        print('Distance matrix calculated')
+        nexa_object.calculate_embedding()
+        print('Embedding calculated')
+        nexa_object.calculate_spatial_clustering()
+        print('Spatial clustering calculated')
+        nexa_object.calculate_cluster_to_indexes()
+        print('Cluster to index calculated')
+        nexa_object.calculate_time_clusters()
+        print('Time clusters calculated')
+
+        # Open the saver 
+        data_base_name = 'text_wall_street_big'
+        saver = NexaSaverHDF5(data_base_name, 'a')
+        # Save 
+        run_name = 'low-resolution'
+        saver.save_complete_run(nexa_object, run_name)
+        print('Saved')
