@@ -41,3 +41,21 @@ def linear_to_matrix_with_values(linear_values, Nsensors,
         matrix[sensor_index, lag_index] = value
 
     return matrix
+
+
+def linear_to_matrix_pairs(linear_indexes):
+    """
+    Transform a linear vector into a matrix representation
+    """
+    import math
+    Nlinear = linear_indexes.size
+    Nside = int(math.sqrt(Nlinear))
+
+    rows_indexes = []
+    columns_indexes = []
+    
+    for index in linear_indexes:
+        rows_indexes.append(index // Nside)
+        columns_indexes.append(index % Nside)
+
+    return zip(rows_indexes, columns_indexes)

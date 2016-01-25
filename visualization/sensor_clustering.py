@@ -5,8 +5,10 @@ clustering of the sensors
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from .aux import linear_to_matrix, linear_to_matrix_with_values
+from .aux import linear_to_matrix_pairs
 import nexa.loading as load
 
 
@@ -20,6 +22,7 @@ def visualize_cluster_matrix(nexa_object, cmap='coolwarm', inter='none',
     Nlags = nexa_object.sensors.nlags
     Nsensors = nexa_object.sensors.Nsensors
     values = nexa_object.index_to_cluster
+
     lags_first = nexa_object.lags_first
 
     to_plot = linear_to_matrix_with_values(values, Nsensors,
@@ -145,3 +148,48 @@ def visualize_cluster_matrix_hdf5(database, run_name, nexa_arrangement,
         return fig
     else:
         return ax
+
+
+def visualize_clusters_text_to_image(nexa, f, run_name):
+    """
+    Takes the nexa file in hdf5 format and plots the
+    cluster with a matrix for each lag in the tex to
+    image format.
+    """
+
+    interpolation = 'none'
+    origin = 'lower'
+    cmap = 'jet'
+    cmap = 'brg'
+    cmap = 'gnuplot'
+
+    cluster_to_index = nexa['cluster_to_index']
+    lags = f[run_name + '/lags']
+
+    Nlags = f[run_name].attrs['Nlags']
+    Nsensors = f[run_name].attrs['Nsensors']
+    Nside = int(np.sqrt(Nsensors))
+
+    matrix = np.zeros((Nside, Nside, Nlags))
+
+    Nspatial_clusters = nexa.attrs['Nspatial_clusters']
+    
+    for cluster in range(Nspatial_clusters):
+        print('cluster', cluster)
+        cluster_indexes = np.array(cluster_to_index[str(cluster)])
+        for index in cluster_indexes:
+            sensor_number = index // Nlags  # This needs to be mapped to matrix
+            sensor_number_x = sensor_number // Nside
+            sensor_number_y = sensor_number % Nside
+            lag_number = index % Nlags
+            matrix[sensor_number_x, sensor_number_y, lag_number] = cluster
+
+    fig = plt.figure(figsize=(16, 12))
+    gs = gridspec.GridSpec(3, 2)
+
+    for (row_index, column_index), lag in  zip(linear_to_matrix_pairs(lags), lags):
+        ax = fig.add_subplot(gs[row_index, column_index])
+        ax.imshow(matrix[..., lag], cmap=cmap, interpolation=interpolation, origin=origin)
+        ax.set_title('Lag ' + str(lag))
+
+    return fig
