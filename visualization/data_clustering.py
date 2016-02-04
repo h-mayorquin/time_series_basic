@@ -104,16 +104,16 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
 
 
 def visualize_data_cluster_text_to_image(nexa, f, run_name,
-                                         cluster, time_center):
+                                         cluster, data_center, colorbar=True):
     """
     Returns a figure of of the time center for a particular time center
     """
     # Get the indexes
     cluster_to_index = nexa['cluster_to_index']
-    cluster_to_time_centers = nexa['cluster_to_time_centers']
+    cluster_to_data_centers = nexa['cluster_to_time_centers']
     
     cluster_indexes = cluster_to_index[str(cluster)]
-    time_centers = cluster_to_time_centers[str(cluster)]
+    data_centers = cluster_to_data_centers[str(cluster)]
 
     # Get the size parameters
     Nsensors = f[run_name].attrs['Nsensors']
@@ -129,21 +129,30 @@ def visualize_data_cluster_text_to_image(nexa, f, run_name,
         sensor_number_x = sensor_number // Nside
         sensor_number_y = sensor_number % Nside
         lag_number = index % Nlags
-        matrix[sensor_number_x, sensor_number_y, lag_number] = time_centers[time_center, i]
+        matrix[sensor_number_x, sensor_number_y, lag_number] = data_centers[data_center, i]
+
+    # Extract minimum and maximum for the color limits
+    min_value = np.min(matrix)
+    max_value = np.max(matrix)
 
     # Plot it
     interpolation = 'none'
     origin = 'lower'
-    cmap = 'jet'
-    cmap = 'brg'
-    cmap = 'gnuplot'
+    cmap = 'inferno_r'
 
     fig = plt.figure(figsize=(16, 12))
     gs = gridspec.GridSpec(3, 2)
 
     for (row_index, column_index), lag in  zip(linear_to_matrix_pairs(lags), lags):
         ax = fig.add_subplot(gs[row_index, column_index])
-        ax.imshow(matrix[..., lag], cmap=cmap, interpolation=interpolation, origin=origin)
-        ax.set_title('Lag ' + str(lag))
+        im = ax.imshow(matrix[..., lag], cmap=cmap, interpolation=interpolation,
+                       origin=origin, vmin=min_value, vmax=max_value)
+        ax.set_title('Lag ' + str(lag) + ' || data center=' + str(data_center))
+
+        if colorbar:
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes("right", size="5%", pad=0.05)
+            cbar = fig.colorbar(im, cax=cax)
+            cbar.solids.set_edgecolor('face')
 
     return fig
