@@ -175,7 +175,6 @@ def visualize_clusters_text_to_image(nexa, f, run_name):
     Nspatial_clusters = nexa.attrs['Nspatial_clusters']
     
     for cluster in range(Nspatial_clusters):
-        print('cluster', cluster)
         cluster_indexes = np.array(cluster_to_index[str(cluster)])
         for index in cluster_indexes:
             sensor_number = index // Nlags  # This needs to be mapped to matrix
@@ -184,6 +183,7 @@ def visualize_clusters_text_to_image(nexa, f, run_name):
             lag_number = index % Nlags
             matrix[sensor_number_x, sensor_number_y, lag_number] = cluster
 
+    # Now plot it
     fig = plt.figure(figsize=(16, 12))
     gs = gridspec.GridSpec(3, 2)
 

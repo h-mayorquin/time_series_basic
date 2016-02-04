@@ -5,7 +5,10 @@ clustering in time
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from .aux import linear_to_matrix_pairs
+
 
 
 def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
@@ -98,3 +101,49 @@ def visualize_time_cluster_matrix(nexa_object, cluster, time_center,
         cax = divider.append_axes("right", size="5%", pad=0.05)
         cbar = fig.colorbar(im, cax=cax)
         cbar.solids.set_edgecolor('face')
+
+
+def visualize_data_cluster_text_to_image(nexa, f, run_name,
+                                         cluster, time_center):
+    """
+    Returns a figure of of the time center for a particular time center
+    """
+    # Get the indexes
+    cluster_to_index = nexa['cluster_to_index']
+    cluster_to_time_centers = nexa['cluster_to_time_centers']
+    
+    cluster_indexes = cluster_to_index[str(cluster)]
+    time_centers = cluster_to_time_centers[str(cluster)]
+
+    # Get the size parameters
+    Nsensors = f[run_name].attrs['Nsensors']
+    Nlags = f[run_name].attrs['Nlags']
+    Nside = int(np.sqrt(Nsensors))
+    lags = f[run_name + '/lags']
+
+    # Matrix to save and fill
+    matrix = np.zeros((Nside, Nside, Nlags))
+
+    for i, index in enumerate(cluster_indexes):
+        sensor_number = index // Nlags
+        sensor_number_x = sensor_number // Nside
+        sensor_number_y = sensor_number % Nside
+        lag_number = index % Nlags
+        matrix[sensor_number_x, sensor_number_y, lag_number] = time_centers[time_center, i]
+
+    # Plot it
+    interpolation = 'none'
+    origin = 'lower'
+    cmap = 'jet'
+    cmap = 'brg'
+    cmap = 'gnuplot'
+
+    fig = plt.figure(figsize=(16, 12))
+    gs = gridspec.GridSpec(3, 2)
+
+    for (row_index, column_index), lag in  zip(linear_to_matrix_pairs(lags), lags):
+        ax = fig.add_subplot(gs[row_index, column_index])
+        ax.imshow(matrix[..., lag], cmap=cmap, interpolation=interpolation, origin=origin)
+        ax.set_title('Lag ' + str(lag))
+
+    return fig
