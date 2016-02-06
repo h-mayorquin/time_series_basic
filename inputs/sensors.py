@@ -137,7 +137,7 @@ class PerceptualSpace:
         This calculates the Sensor Lagged Matrix (SLM) of the
         set of sensors its dimensions should be:
 
-        (nsensors * nlags, data_size - nlags)
+        (nsensors * nlags, data_size - nlargs)
         """
 
         # Initialize it

@@ -64,7 +64,7 @@ for maximal_lag in maximal_lags:
     nexa_object.calculate_distance_matrix()
     print('STDM shape', nexa_object.STDM.shape)
     print('Distance matrix calculated')
-    nexa_object.calculate_embedding()
+    nexa_object.calculate_embedding
     print('Embedding calculated')
     nexa_object.calculate_spatial_clustering()
     print('Spatial clustering calculated')

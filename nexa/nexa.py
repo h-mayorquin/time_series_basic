@@ -8,9 +8,9 @@ from inputs.sensors import PerceptualSpace
 from nexa.aux_functions import softmax_base
 
 
-class Nexa():
+class Nexa:
     """
-    This is the class for Nexa.
+    This is the class for nexa.
     """
 
     n_init = 10
@@ -136,7 +136,7 @@ class Nexa():
         Calculates all the quantities of the object in one go
         """
         self.calculate_distance_matrix()
-        self.calculate_embedding()
+        self.calculate_embedding
         self.calculate_spatial_clustering()
         self.calculate_cluster_to_indexes()
         self.calculate_time_clusters()

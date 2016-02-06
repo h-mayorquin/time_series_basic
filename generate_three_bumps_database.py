@@ -9,7 +9,7 @@ from signals.aux_functions import gaussian_bump
 from inputs.sensors import Sensor, PerceptualSpace
 from inputs.lag_structure import LagStructure
 
-# Nexa
+# nexa
 from nexa.nexa import Nexa
 from nexa.saving import NexaSaverHDF5
 
@@ -31,7 +31,7 @@ Nwindowsize = int(window_size / dt)
 weights = None
 lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=window_size)
 
-# Nexa Parameters
+# nexa Parameters
 Nspatial_clusters = 3
 Ntime_clusters = 4
 Nembedding = 3
@@ -65,7 +65,7 @@ for center1 in centers1:
         sensors = [sensor1, sensor2, sensor3]
         perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
-        # Create the Nexa object
+        # Create the nexa object
         nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
         # Calculate all and save

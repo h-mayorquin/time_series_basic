@@ -74,7 +74,7 @@ class NexaSaverHDF5():
             f[file_level].attrs['format of spatial'] = 'Nspatial_clusters-Ntime_clusters-Nembedding'
             f[file_level].attrs['lags_first'] = nexa_object.lags_first
 
-        # Nexa structure
+        # nexa structure
         spatial_name = str(nexa_object.Nspatial_clusters) + '-'
         spatial_name += str(nexa_object.Ntime_clusters) + '-'
         spatial_name += str(nexa_object.Nembedding)

@@ -6,7 +6,7 @@ import matplotlib as mpl
 from signals.aux_functions import gaussian_bump
 from inputs.sensors import Sensor, PerceptualSpace
 from inputs.lag_structure import LagStructure
-# Nexa
+# nexa
 from nexa.nexa import Nexa
 # Visualization libraries
 from visualization.sensor_clustering import visualize_cluster_matrix
@@ -82,7 +82,7 @@ def parameter_swep_SLM(base, distance, value):
     ax1 = fig.add_subplot(gs[:, 1])
 
 
-    # Now the Nexa object
+    # Now the nexa object
     nexa_object = Nexa(perceptual_space, Nspatial_clusters,
                        Ntime_clusters, Nembedding)
 
@@ -128,7 +128,7 @@ def parameter_swep_STDM(base, distance, value):
     ax1 = fig.add_subplot(gs[:, 1])
 
 
-    # Now the Nexa object
+    # Now the nexa object
     nexa_object = Nexa(perceptual_space, Nspatial_clusters,
                        Ntime_clusters, Nembedding)
 
@@ -174,12 +174,12 @@ def parameter_swep_cluster(base, distance, value):
     ax1 = fig.add_subplot(gs[:, 1])
 
 
-    # Now the Nexa object
+    # Now the nexa object
     nexa_object = Nexa(perceptual_space, Nspatial_clusters,
                        Ntime_clusters, Nembedding)
 
     nexa_object.calculate_distance_matrix()
-    nexa_object.calculate_embedding()
+    nexa_object.calculate_embedding
     nexa_object.calculate_spatial_clustering()
 
     # Visualize object
@@ -223,12 +223,12 @@ def parameter_swep_cluster_SLM(base, distance, value):
 
 
 
-    # Now the Nexa object
+    # Now the nexa object
     nexa_object = Nexa(perceptual_space, Nspatial_clusters,
                        Ntime_clusters, Nembedding)
 
     nexa_object.calculate_distance_matrix()
-    nexa_object.calculate_embedding()
+    nexa_object.calculate_embedding
     nexa_object.calculate_spatial_clustering()
 
     # Visualize the cluster on the right side
