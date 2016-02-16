@@ -1,7 +1,6 @@
 """
-Just to play
+play
 """
-
 import numpy as np
 
 from inputs.sensors import Sensor, PerceptualSpace
@@ -9,7 +8,6 @@ from inputs.lag_structure import LagStructure
 from nexa.nexa import Nexa
 from nexa.saving import NexaSaverHDF5
 import h5py
-
 
 signal_location = './data/wall_street_data.hdf5'
 
@@ -22,30 +20,75 @@ with h5py.File(signal_location, 'r') as f:
 
 # Get the data and copy it
 Ndata = signals.shape[0]
+Nside = signals.shape[1]
+Ndata = 50000
+signals = signals[:Ndata, ...]
+signals_columns = signals.swapaxes(1, 2).reshape(Ndata * Nside, Nside)
+signals_columns += np.random.uniform(size=signals_columns.shape)
+print('zeros', np.sum(signals_columns[0] == 0))
+print('signals shape', signals_columns.shape)
 
-signals_original = signals[:Ndata, ...]
-signals_transposed = np.copy(signals_original)
-signals_third_copy = np.copy(signals_original)
+# Now we need the nexa thing
+dt = 1.0
+lag_times = np.arange(0, 3, 1)
+window_size = signals_columns.shape[0] - (lag_times[-1] + 1)
+weights = None
 
-# Get the dimensions
-Nside = signals_original.shape[1]
+lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=window_size)
+sensors = [Sensor(signal, dt, lag_structure) for signal in signals_columns.T]
+perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
-# Transpose the matrix
-if True:
-    for index, signal in enumerate(signals_original):
-        signals_transposed[index, ...]= signal.T
+index_to_cluster = np.zeros(lag_times.size * 10)
+for index in range(index_to_cluster.size):
+    index_to_cluster[index] = index % 3
 
-# Let's get the first entry from the original matrix
-first_original_entry = signals_original[0, ...]
+Ntime_clusters = 3
+Nspatial_clusters = 3
+Nembedding = 3
 
-# Reshape the both signals
-reshaped_original = np.copy(signals_original).reshape(Ndata * Nside, Nside)
-reshaped_transposed = np.copy(signals_transposed).reshape(Ndata * Nside, Nside)
-signals_third_copy = signals_third_copy.swapaxes(1, 2).reshape(Ndata * Nside, Nside)
+N_time_clusters_set = np.arange(3, 50, 3)
+for Ntime_clusters in N_time_clusters_set:
+    print(Ntime_clusters)
+    # Get the normal nexa object
+    nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
-# Print to make comparisons
-if True:
-    print('first original entry \n', first_original_entry)
-    print('original', reshaped_original[3])
-    print('transpoed', reshaped_transposed[3])
-    print('third copy', signals_third_copy[3])
+    nexa_object.calculate_distance_matrix()
+    print('STDM shape', nexa_object.STDM.shape)
+    print('Distance matrix calculated')
+    nexa_object.calculate_embedding()
+    print('Embedding calculated')
+    nexa_object.calculate_spatial_clustering()
+    print('Spatial clustering calculated')
+    nexa_object.calculate_cluster_to_indexes()
+    print('Cluster to index calculated')
+    nexa_object.calculate_time_clusters()
+    print('Time clusters calculated')
+
+    # Open the saver 
+    data_base_name = 'text_wall_street_columns'
+    saver = NexaSaverHDF5(data_base_name, 'a')
+    # Save 
+    run_name = 'test'
+    saver.save_complete_run(nexa_object, run_name)
+    print('Saved Mix')
+
+    # Get the independent nexa object
+    nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
+
+    nexa_object.calculate_distance_matrix()
+    print('STDM shape', nexa_object.STDM.shape)
+    print('Distance matrix calculated')
+    nexa_object.index_to_cluster = index_to_cluster
+    print('Spatial clustering calculated')
+    nexa_object.calculate_cluster_to_indexes()
+    print('Cluster to index calculated')
+    nexa_object.calculate_time_clusters()
+    print('Time clusters calculated')
+
+    # Open the saver 
+    data_base_name = 'text_wall_street_columns'
+    saver = NexaSaverHDF5(data_base_name, 'a')
+    # Save 
+    run_name = 'indep'
+    saver.save_complete_run(nexa_object, run_name)
+    print('Saved Independent')

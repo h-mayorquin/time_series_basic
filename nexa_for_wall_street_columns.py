@@ -1,5 +1,5 @@
 """
-This preoduces the data for the example of Nexa for wall street columns
+This preoduces the data for the example of Nexa for wall street with columns
 """
 
 import numpy as np
@@ -9,7 +9,6 @@ from inputs.lag_structure import LagStructure
 from nexa.nexa import Nexa
 from nexa.saving import NexaSaverHDF5
 import h5py
-
 
 signal_location = './data/wall_street_data.hdf5'
 
@@ -40,32 +39,58 @@ lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=w
 sensors = [Sensor(signal, dt, lag_structure) for signal in signals_columns.T]
 perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
+index_to_cluster = np.zeros(lag_times.size * 10)
+for index in range(index_to_cluster.size):
+    index_to_cluster[index] = index % 3
+
 Ntime_clusters = 3
 Nspatial_clusters = 3
 Nembedding = 3
 
-nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
+Ntime_clusters_set = np.arange(3, 50, 3)
+for Ntime_clusters in Ntime_clusters_set:
+    print('------------------')
+    print('Ntime clusters', Ntime_clusters, Ntime_clusters_set.size)
+    # Get the normal nexa object
+    nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
 
-# Calculate
-# nexa_object.calculate_all()
-# Now we calculate the distance matrix
-nexa_object.calculate_distance_matrix()
-print('STDM shape', nexa_object.STDM.shape)
-print('Distance matrix calculated')
-nexa_object.calculate_embedding()
-print('Embedding calculated')
-nexa_object.calculate_spatial_clustering()
-print('Spatial clustering calculated')
-nexa_object.calculate_cluster_to_indexes()
-print('Cluster to index calculated')
-nexa_object.calculate_time_clusters()
-print('Time clusters calculated')
+    nexa_object.calculate_distance_matrix()
+    print('STDM shape', nexa_object.STDM.shape)
+    print('Distance matrix calculated')
+    nexa_object.calculate_embedding()
+    print('Embedding calculated')
+    nexa_object.calculate_spatial_clustering()
+    print('Spatial clustering calculated')
+    nexa_object.calculate_cluster_to_indexes()
+    print('Cluster to index calculated')
+    nexa_object.calculate_time_clusters()
+    print('Time clusters calculated')
 
-# Open the saver 
-data_base_name = 'text_wall_street_columns'
-saver = NexaSaverHDF5(data_base_name, 'a')
-# Save 
-run_name = 'test'
-saver.save_complete_run(nexa_object, run_name)
-print('Saved')
+    # Open the saver 
+    data_base_name = 'text_wall_street_columns'
+    saver = NexaSaverHDF5(data_base_name, 'a')
+    # Save 
+    run_name = 'test'
+    saver.save_complete_run(nexa_object, run_name)
+    print('Saved Mix')
 
+    # Get the independent nexa object
+    nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
+
+    nexa_object.calculate_distance_matrix()
+    print('STDM shape', nexa_object.STDM.shape)
+    print('Distance matrix calculated')
+    nexa_object.index_to_cluster = index_to_cluster
+    print('Spatial clustering calculated')
+    nexa_object.calculate_cluster_to_indexes()
+    print('Cluster to index calculated')
+    nexa_object.calculate_time_clusters()
+    print('Time clusters calculated')
+
+    # Open the saver 
+    data_base_name = 'text_wall_street_columns'
+    saver = NexaSaverHDF5(data_base_name, 'a')
+    # Save 
+    run_name = 'indep'
+    saver.save_complete_run(nexa_object, run_name)
+    print('Saved Independent')
