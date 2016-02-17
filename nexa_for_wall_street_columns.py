@@ -1,4 +1,4 @@
-"""
+n"""
 This preoduces the data for the example of Nexa for wall street with columns
 """
 
@@ -48,6 +48,7 @@ Nspatial_clusters = 3
 Nembedding = 3
 
 Ntime_clusters_set = np.arange(3, 50, 3)
+
 for Ntime_clusters in Ntime_clusters_set:
     print('------------------')
     print('Ntime clusters', Ntime_clusters, Ntime_clusters_set.size)
