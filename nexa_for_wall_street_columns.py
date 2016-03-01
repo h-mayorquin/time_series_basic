@@ -1,4 +1,4 @@
-n"""
+"""
 This preoduces the data for the example of Nexa for wall street with columns
 """
 
@@ -11,6 +11,7 @@ from nexa.saving import NexaSaverHDF5
 import h5py
 
 signal_location = './data/wall_street_data.hdf5'
+signal_location = './data/wall_street_data_spaces.hdf5'
 
 # Access the data and load it into signal
 with h5py.File(signal_location, 'r') as f:
@@ -68,7 +69,7 @@ for Ntime_clusters in Ntime_clusters_set:
     print('Time clusters calculated')
 
     # Open the saver 
-    data_base_name = 'text_wall_street_columns'
+    data_base_name = 'text_wall_street_columns_spaces'
     saver = NexaSaverHDF5(data_base_name, 'a')
     # Save 
     run_name = 'test'
@@ -89,7 +90,7 @@ for Ntime_clusters in Ntime_clusters_set:
     print('Time clusters calculated')
 
     # Open the saver 
-    data_base_name = 'text_wall_street_columns'
+    data_base_name = 'text_wall_street_columns_spaces'
     saver = NexaSaverHDF5(data_base_name, 'a')
     # Save 
     run_name = 'indep'

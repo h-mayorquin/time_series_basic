@@ -156,3 +156,50 @@ def visualize_data_cluster_text_to_image(nexa, f, run_name,
             cbar.solids.set_edgecolor('face')
 
     return fig
+
+def visualize_data_cluster_text_to_image_columns(nexa, f, run_name,
+                                                cluster, data_center, colorbar=True):
+    """
+    Returns a figure of of the time center for a particular time center
+    """
+    # Get the indexes
+    cluster_to_index = nexa['cluster_to_index']
+    cluster_to_data_centers = nexa['cluster_to_time_centers']
+    
+    cluster_indexes = cluster_to_index[str(cluster)]
+    data_centers = cluster_to_data_centers[str(cluster)]
+
+    # Matrix to save and fill
+    Nside = 10
+    Ncolumns = 3
+    matrix = np.zeros((Nside, Ncolumns))
+
+    for i, index in enumerate(cluster_indexes):
+        sensor_number = index
+        sensor_number_x = sensor_number // Ncolumns
+        sensor_number_y = sensor_number % Ncolumns
+        matrix[sensor_number_x, sensor_number_y] = data_centers[data_center, i]
+
+    # Extract minimum and maximum for the color limits
+    min_value = np.min(matrix)
+    max_value = np.max(matrix)
+
+    # Plot it
+    interpolation = 'none'
+    origin = 'lower'
+    cmap = 'inferno_r'
+
+    fig = plt.figure(figsize=(16, 12))
+
+    ax = fig.add_subplot(111)
+    im = ax.imshow(matrix, cmap=cmap, interpolation=interpolation,
+                   origin=origin, vmin=min_value, vmax=max_value)
+    ax.set_title('data center=' + str(data_center))
+
+    if colorbar:
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        cbar = fig.colorbar(im, cax=cax)
+        cbar.solids.set_edgecolor('face')
+
+    return fig

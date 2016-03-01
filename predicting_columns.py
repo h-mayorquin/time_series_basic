@@ -29,7 +29,7 @@ if False:
 
 # Nexa parameters
 Nspatial_clusters = 3
-Ntime_clusters = 3
+Ntime_clusters = 48
 Nembedding = 3
 
 parameters_string = '/' + str(Nspatial_clusters)
@@ -40,7 +40,7 @@ nexa = f[run_name + parameters_string]
 cluster_to_index = nexa['cluster_to_index']
 code_vectors_softmax = np.array(nexa['code-vectors-softmax'])
 
-Ndata = 5000
+Ndata = 10000
 targets = []
 
 for index in range(Ndata):
@@ -61,7 +61,7 @@ score = clf_linear.score(X_test, y_test) * 100.0
 print('score', score)
 prediction = clf_linear.predict(X_train)
 
-run_name = '/independent'
+run_name = '/indep'
 f = h5py.File(file_location, 'r')
 
 
@@ -110,4 +110,4 @@ clf_linear = svm.SVC(C=1.0, kernel='linear')
 clf_linear.fit(X_train, y_train)
 score = clf_linear.score(X_test, y_test) * 100.0
 print('score ind', score)
-prediction = clf_linear.predict(X_train)
+prediction_ind = clf_linear.predict(X_train)

@@ -1,94 +1,39 @@
-"""
-play
-"""
 import numpy as np
-
-from inputs.sensors import Sensor, PerceptualSpace
-from inputs.lag_structure import LagStructure
-from nexa.nexa import Nexa
-from nexa.saving import NexaSaverHDF5
 import h5py
+import matplotlib.pyplot as plt
+from visualization.data_clustering import visualize_data_cluster_text_to_image_columns
 
-signal_location = './data/wall_street_data.hdf5'
-
-# Access the data and load it into signal
-with h5py.File(signal_location, 'r') as f:
-    dset = f['signal']
-    signals = np.empty(dset.shape, np.float)
-    dset.read_direct(signals)
+# First we load the file 
+file_location = './results_database/text_wall_street_columns_spaces.hdf5'
+run_name = '/test'
+f = h5py.File(file_location, 'r')
 
 
-# Get the data and copy it
-Ndata = signals.shape[0]
-Nside = signals.shape[1]
-Ndata = 50000
-signals = signals[:Ndata, ...]
-signals_columns = signals.swapaxes(1, 2).reshape(Ndata * Nside, Nside)
-signals_columns += np.random.uniform(size=signals_columns.shape)
-print('zeros', np.sum(signals_columns[0] == 0))
-print('signals shape', signals_columns.shape)
+# Now we need to get the letters and align them
+text_directory = './data/wall_street_letters_spaces.npy'
+letters_sequence = np.load(text_directory)
+Nletters = len(letters_sequence)
+symbols = set(letters_sequence)
 
-# Now we need the nexa thing
-dt = 1.0
-lag_times = np.arange(0, 3, 1)
-window_size = signals_columns.shape[0] - (lag_times[-1] + 1)
-weights = None
-
-lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=window_size)
-sensors = [Sensor(signal, dt, lag_structure) for signal in signals_columns.T]
-perceptual_space = PerceptualSpace(sensors, lag_first=True)
-
-index_to_cluster = np.zeros(lag_times.size * 10)
-for index in range(index_to_cluster.size):
-    index_to_cluster[index] = index % 3
-
-Ntime_clusters = 3
+# Nexa parameters
 Nspatial_clusters = 3
+Ntime_clusters = 3
 Nembedding = 3
 
-N_time_clusters_set = np.arange(3, 50, 3)
-for Ntime_clusters in N_time_clusters_set:
-    print(Ntime_clusters)
-    # Get the normal nexa object
-    nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
+parameters_string = '/' + str(Nspatial_clusters)
+parameters_string += '-' + str(Ntime_clusters)
+parameters_string += '-' + str(Nembedding)
 
-    nexa_object.calculate_distance_matrix()
-    print('STDM shape', nexa_object.STDM.shape)
-    print('Distance matrix calculated')
-    nexa_object.calculate_embedding()
-    print('Embedding calculated')
-    nexa_object.calculate_spatial_clustering()
-    print('Spatial clustering calculated')
-    nexa_object.calculate_cluster_to_indexes()
-    print('Cluster to index calculated')
-    nexa_object.calculate_time_clusters()
-    print('Time clusters calculated')
+nexa = f[run_name + parameters_string]
+cluster_to_index = nexa['cluster_to_index']
 
-    # Open the saver 
-    data_base_name = 'text_wall_street_columns'
-    saver = NexaSaverHDF5(data_base_name, 'a')
-    # Save 
-    run_name = 'test'
-    saver.save_complete_run(nexa_object, run_name)
-    print('Saved Mix')
+cluster = 2
+data_center = 1
 
-    # Get the independent nexa object
-    nexa_object = Nexa(perceptual_space, Nspatial_clusters, Ntime_clusters, Nembedding)
+if True:
+    fig = visualize_data_cluster_text_to_image_columns(nexa, f, run_name,
+                                                       cluster, data_center, colorbar=True)
+    plt.show(fig)
 
-    nexa_object.calculate_distance_matrix()
-    print('STDM shape', nexa_object.STDM.shape)
-    print('Distance matrix calculated')
-    nexa_object.index_to_cluster = index_to_cluster
-    print('Spatial clustering calculated')
-    nexa_object.calculate_cluster_to_indexes()
-    print('Cluster to index calculated')
-    nexa_object.calculate_time_clusters()
-    print('Time clusters calculated')
 
-    # Open the saver 
-    data_base_name = 'text_wall_street_columns'
-    saver = NexaSaverHDF5(data_base_name, 'a')
-    # Save 
-    run_name = 'indep'
-    saver.save_complete_run(nexa_object, run_name)
-    print('Saved Independent')
+    
