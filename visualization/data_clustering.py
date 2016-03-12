@@ -158,7 +158,8 @@ def visualize_data_cluster_text_to_image(nexa, f, run_name,
     return fig
 
 def visualize_data_cluster_text_to_image_columns(nexa, f, run_name,
-                                                cluster, data_center, colorbar=True):
+                                                 cluster, data_center, colorbar=True,
+                                                 Nside=10, Ncolumns=3):
     """
     Returns a figure of of the time center for a particular time center
     """
@@ -170,8 +171,8 @@ def visualize_data_cluster_text_to_image_columns(nexa, f, run_name,
     data_centers = cluster_to_data_centers[str(cluster)]
 
     # Matrix to save and fill
-    Nside = 10
-    Ncolumns = 3
+    Nside = Nside
+    Ncolumns = Ncolumns
     matrix = np.zeros((Nside, Ncolumns))
 
     for i, index in enumerate(cluster_indexes):
