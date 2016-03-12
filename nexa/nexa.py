@@ -131,6 +131,31 @@ class Nexa:
             centers = classifier.cluster_centers_
             self.cluster_to_time_centers[cluster_n] = centers
 
+    def calculate_time_clusters_indp(self):
+        """
+        This calculates a dictionary where the keys are sensor
+        cluster indexes and the values are an array
+        of the cluster centers.
+
+        TO DO: Return the signal indexes when asigned to cluster
+        """
+
+        n_jobs = Nexa.n_jobs
+        t_clusters = self.Ntime_clusters
+
+        self.cluster_to_time_centers = {}
+
+        cluster_indexes = self.cluster_to_index[0]
+        data_in_the_cluster = self.SLM[cluster_indexes, :]
+        classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
+        classifier.fit_predict(data_in_the_cluster.T)
+        centers = classifier.cluster_centers_
+
+        for cluster_n, cluster_indexes in self.cluster_to_index.items():
+            self.cluster_to_time_centers[cluster_n] = centers
+
+            
+    
     def calculate_all(self):
         """
         Calculates all the quantities of the object in one go

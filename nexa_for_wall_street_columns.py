@@ -12,6 +12,7 @@ import h5py
 
 signal_location = './data/wall_street_data.hdf5'
 signal_location = './data/wall_street_data_spaces.hdf5'
+signal_location = './data/wall_street_data_30.hdf5'
 
 # Access the data and load it into signal
 with h5py.File(signal_location, 'r') as f:
@@ -23,7 +24,7 @@ with h5py.File(signal_location, 'r') as f:
 # Get the data and copy it
 Ndata = signals.shape[0]
 Nside = signals.shape[1]
-Ndata = 50000
+Ndata = 20000
 signals = signals[:Ndata, ...]
 signals_columns = signals.swapaxes(1, 2).reshape(Ndata * Nside, Nside)
 signals_columns += np.random.uniform(size=signals_columns.shape)
@@ -32,7 +33,8 @@ print('signals shape', signals_columns.shape)
 
 # Now we need the nexa thing
 dt = 1.0
-lag_times = np.arange(0, 3, 1)
+max_lag = 3
+lag_times = np.arange(0, max_lag, 1)
 window_size = signals_columns.shape[0] - (lag_times[-1] + 1)
 weights = None
 
@@ -40,15 +42,16 @@ lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=w
 sensors = [Sensor(signal, dt, lag_structure) for signal in signals_columns.T]
 perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
-index_to_cluster = np.zeros(lag_times.size * 10)
+Nside_aux = 30  # The side of the 
+index_to_cluster = np.zeros(lag_times.size * Nside_aux)
 for index in range(index_to_cluster.size):
-    index_to_cluster[index] = index % 3
+    index_to_cluster[index] = index % max_lag
 
 Ntime_clusters = 3
 Nspatial_clusters = 3
 Nembedding = 3
 
-Ntime_clusters_set = np.arange(3, 50, 3)
+Ntime_clusters_set = np.arange(10, 55, 5)
 
 for Ntime_clusters in Ntime_clusters_set:
     print('------------------')
@@ -69,7 +72,7 @@ for Ntime_clusters in Ntime_clusters_set:
     print('Time clusters calculated')
 
     # Open the saver 
-    data_base_name = 'text_wall_street_columns_spaces'
+    data_base_name = 'text_wall_street_columns_30'
     saver = NexaSaverHDF5(data_base_name, 'a')
     # Save 
     run_name = 'test'
@@ -86,11 +89,11 @@ for Ntime_clusters in Ntime_clusters_set:
     print('Spatial clustering calculated')
     nexa_object.calculate_cluster_to_indexes()
     print('Cluster to index calculated')
-    nexa_object.calculate_time_clusters()
+    nexa_object.calculate_time_clusters_indp()
     print('Time clusters calculated')
 
     # Open the saver 
-    data_base_name = 'text_wall_street_columns_spaces'
+    data_base_name = 'text_wall_street_columns_30'
     saver = NexaSaverHDF5(data_base_name, 'a')
     # Save 
     run_name = 'indep'
