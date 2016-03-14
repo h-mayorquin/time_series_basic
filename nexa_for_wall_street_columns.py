@@ -24,7 +24,7 @@ with h5py.File(signal_location, 'r') as f:
 # Get the data and copy it
 Ndata = signals.shape[0]
 Nside = signals.shape[1]
-Ndata = 20000
+Ndata = 15000
 signals = signals[:Ndata, ...]
 signals_columns = signals.swapaxes(1, 2).reshape(Ndata * Nside, Nside)
 signals_columns += np.random.uniform(size=signals_columns.shape)
@@ -33,7 +33,7 @@ print('signals shape', signals_columns.shape)
 
 # Now we need the nexa thing
 dt = 1.0
-max_lag = 3
+max_lag = 10.0
 lag_times = np.arange(0, max_lag, 1)
 window_size = signals_columns.shape[0] - (lag_times[-1] + 1)
 weights = None
@@ -42,13 +42,13 @@ lag_structure = LagStructure(lag_times=lag_times, weights=weights, window_size=w
 sensors = [Sensor(signal, dt, lag_structure) for signal in signals_columns.T]
 perceptual_space = PerceptualSpace(sensors, lag_first=True)
 
-Nside_aux = 30  # The side of the 
+Nside_aux = 30  # The side of the image
 index_to_cluster = np.zeros(lag_times.size * Nside_aux)
 for index in range(index_to_cluster.size):
     index_to_cluster[index] = index % max_lag
 
 Ntime_clusters = 3
-Nspatial_clusters = 3
+Nspatial_clusters = max_lag
 Nembedding = 3
 
 Ntime_clusters_set = np.arange(10, 55, 5)
