@@ -84,3 +84,56 @@ def visualize_code_vectors(code_vectors, cmap='Paired', inter='none',
         cbar.solids.set_edgecolor('face')
 
     return fig
+
+
+def visualize_representation_winners(code_vectors, Nsensor_clusters, Ndata_clusters, ax=None):
+    """
+    Here we plot an histogram with the frequencies of winning for each of 
+    the data clusters in each receptive field (Nsensors clusters)
+
+    Parameters:
+    --------------
+    code_vectors: the code vectors in winner takes all format.
+    Nsensor_clusters: The number of sensor cluster or receptive fields.
+    Ndata_clusters: The number of data clusters per receptiv field.
+    ax: an axes instance of matplotlib.
+
+    If the axes instance is passed the axes instance is returned. Otherwise 
+    just run plt.show() after the function to plot it.
+    """
+
+    # Create an axes instance if it is not passed
+    if ax is None:
+        fig = plt.figure(figsize=(16, 12))
+        ax = fig.add_subplot(111)
+
+    # Get the frequencies and the indexes
+    frequencies = code_vectors.mean(axis=0) 
+    left_coordinates = np.arange(frequencies.size)
+
+    # Get the color map
+    Nfeatures = Nsensor_clusters * Ndata_clusters
+    color_aux = np.arange(Nfeatures) // Ndata_clusters
+    color_aux = color_aux / np.max(color_aux)
+    color = plt.cm.Paired(color_aux)
+
+    # Plot the bar and configure it
+    ax.bar(left_coordinates, frequencies, color=color, align='center', alpha=0.8)
+    ax.set_xlim(-1, Nfeatures + 1)
+    ax.set_ylim(0, 1.0)
+    ax.set_xlabel('Receptive Fields')
+    ax.set_ylabel('Level of activation')
+
+    # Set the format for the thicks
+    formatting = []
+    for cluster in range(Nsensor_clusters + 1):
+        formatting.append(str(cluster))
+
+    ax.xaxis.set_major_formatter(plt.FixedFormatter(formatting))
+    ax.xaxis.set_major_locator(plt.MultipleLocator(Ndata_clusters))
+    
+    
+    return ax
+
+
+
