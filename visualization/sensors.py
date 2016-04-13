@@ -234,7 +234,7 @@ def visualize_STDM_hdf5(database, run_name, nexa_arrangement,
     Routine which plots the STDM using seaborn
     and extracting this from a hdf5 representation
     """
-
+    sns.set(font_scale=2)
     to_plot = load.get_STDM_hdf5(database, run_name, nexa_arrangement)
     if ax is None:
         fig, ax = plt.subplots(figsize=(11, 9))
@@ -243,15 +243,12 @@ def visualize_STDM_hdf5(database, run_name, nexa_arrangement,
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
 
     # Draw the heatmap with the mask and correct aspect ratio
-    sns.heatmap(to_plot, mask=None,  cmap=cmap,
+    ax = sns.heatmap(to_plot, mask=None,  cmap=cmap,
                 vmax=1.0, vmin=-1.0,
-                square=True, xticklabels=5, yticklabels=5,
+                square=True, xticklabels=False, yticklabels=False,
                 linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
 
-    plt.title('Spatio Temporal Distance Matrix (Distances)')
+    ax.set_title('Spatio Temporal Distance Matrix')
 
-    if ax is None:
-        return fig
-    else:
-        return ax
+    return ax
 

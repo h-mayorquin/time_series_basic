@@ -21,8 +21,7 @@ def get_STDM_hdf5(database, run_name, nexa_arrangement):
     as well.
     """
     r = database[run_name]
-    n = r[nexa_arrangement]
-    STDM = n['STDM']
+    STDM = r['STDM']
 
     return STDM[...]
 

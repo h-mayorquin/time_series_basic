@@ -48,9 +48,9 @@ for center1 in centers1:
         center3 = center3
 
         # Now create the guassian bumps
-        gb1 = gaussian_bump(time, center1, max_rate, base, value, attenuation)
-        gb2 = gaussian_bump(time, center2, max_rate, base, value, attenuation)
-        gb3 = gaussian_bump(time, center3, max_rate, base, value, attenuation)
+        gb1 = gaussian_bump(time, center1, 0.5 * max_rate, base, value, attenuation)
+        gb2 = gaussian_bump(time, center2, max_rate, base * 2, value, attenuation)
+        gb3 = gaussian_bump(time, center3, max_rate, base * 0.5, value, attenuation)
 
         # Add some noise
         gb1 += np.random.rand(gb1.size)

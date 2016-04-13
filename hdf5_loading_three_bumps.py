@@ -31,8 +31,8 @@ center3 = 700
 
 # Now create the guassian bumps
 gb1 = gaussian_bump(time, center1, max_rate, base, value, attenuation)
-gb2 = gaussian_bump(time, center2, max_rate, base, value, attenuation)
-gb3 = gaussian_bump(time, center3, max_rate, base, value, attenuation)
+gb2 = gaussian_bump(time, center2, max_rate, base, value * 2, attenuation)
+gb3 = gaussian_bump(time, center3, max_rate, base, value * 0.5, attenuation)
 
 # Database extraction
 run_name = str(center1) + '-'
