@@ -6,7 +6,7 @@ from sklearn import manifold, cluster
 
 from inputs.sensors import PerceptualSpace
 from nexa.aux_functions import softmax_base
-
+from .csl import CSL
 
 class Nexa:
     """
@@ -126,9 +126,11 @@ class Nexa:
         for cluster_n, cluster_indexes in self.cluster_to_index.items():
 
             data_in_the_cluster = self.SLM[cluster_indexes, :]
-            classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
+            classifier = CSL(n_clusters=t_clusters)
+            # classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
             classifier.fit_predict(data_in_the_cluster.T)
-            centers = classifier.cluster_centers_
+            # centers = classifier.cluster_centers_
+            centers = classifier.centers_
             self.cluster_to_time_centers[cluster_n] = centers
 
     def calculate_time_clusters_indp(self):
@@ -147,9 +149,11 @@ class Nexa:
 
         cluster_indexes = self.cluster_to_index[0]
         data_in_the_cluster = self.SLM[cluster_indexes, :]
-        classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
+        classifier = CSL(n_clusters=t_clusters)
+        # classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
         classifier.fit_predict(data_in_the_cluster.T)
-        centers = classifier.cluster_centers_
+        # centers = classifier.cluster_centers_
+        centers = classifier.centers_
 
         for cluster_n, cluster_indexes in self.cluster_to_index.items():
             self.cluster_to_time_centers[cluster_n] = centers

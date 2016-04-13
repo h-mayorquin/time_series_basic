@@ -33,7 +33,7 @@ print('signals shape', signals_columns.shape)
 
 # Now we need the nexa thing
 dt = 1.0
-max_lag = 10.0
+max_lag = 10
 lag_times = np.arange(0, max_lag, 1)
 window_size = signals_columns.shape[0] - (lag_times[-1] + 1)
 weights = None
@@ -48,10 +48,10 @@ for index in range(index_to_cluster.size):
     index_to_cluster[index] = index % max_lag
 
 Ntime_clusters = 3
-Nspatial_clusters = max_lag
+Nspatial_clusters = int(max_lag)
 Nembedding = 3
 
-Ntime_clusters_set = np.arange(10, 55, 5)
+Ntime_clusters_set = np.arange(10, 25, 5, dtype=int)
 
 for Ntime_clusters in Ntime_clusters_set:
     print('------------------')

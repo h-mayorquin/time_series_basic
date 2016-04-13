@@ -12,7 +12,6 @@ from nexa.nexa import Nexa
 from nexa.saving import NexaSaverHDF5
 import h5py
 
-
 signal_location = './data/wall_street_data.hdf5'
 
 # Access the data and load it into signal
