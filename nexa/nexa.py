@@ -126,11 +126,10 @@ class Nexa:
         for cluster_n, cluster_indexes in self.cluster_to_index.items():
 
             data_in_the_cluster = self.SLM[cluster_indexes, :]
-            classifier = CSL(n_clusters=t_clusters)
-            # classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
+            # classifier = CSL(n_clusters=t_clusters)
+            classifier = cluster.KMeans(n_clusters=t_clusters, n_jobs=n_jobs)
             classifier.fit_predict(data_in_the_cluster.T)
-            # centers = classifier.cluster_centers_
-            centers = classifier.centers_
+            centers = classifier.cluster_centers_
             self.cluster_to_time_centers[cluster_n] = centers
 
     def calculate_time_clusters_indp(self):
@@ -165,7 +164,7 @@ class Nexa:
         Calculates all the quantities of the object in one go
         """
         self.calculate_distance_matrix()
-        self.calculate_embedding
+        self.calculate_embedding()
         self.calculate_spatial_clustering()
         self.calculate_cluster_to_indexes()
         self.calculate_time_clusters()

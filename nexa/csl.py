@@ -387,7 +387,7 @@ class CSL(BaseEstimator, TransformerMixin):
 
         Attributes:
         ------------
-        centers_: array, [n_clusters, n_features]
+        cluster_centers_: array, [n_clusters, n_features]
             coordinates of clusters or neurons centers.
 
 
